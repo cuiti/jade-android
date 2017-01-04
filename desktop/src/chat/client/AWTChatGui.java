@@ -3,6 +3,12 @@ package chat.client;
 import java.awt.*;
 import java.awt.event.*;
 
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
+import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.swing.BrowserView;
+
 import chat.client.agent.ChatClientAgent;
 
 public class AWTChatGui extends Frame implements ChatGui {
@@ -10,6 +16,8 @@ public class AWTChatGui extends Frame implements ChatGui {
 	private TextField writeTf;
 	private TextArea allTa;
 	private ParticipantsFrame participantsFrame;
+	final Browser browser = new Browser();
+    BrowserView browserView = new BrowserView(browser);
 	
 	public AWTChatGui(ChatClientAgent a) {
 		myAgent = a;
@@ -57,6 +65,20 @@ public class AWTChatGui extends Frame implements ChatGui {
 			}
 		} );
 		
+		
+	    String dir = System.getProperty("user.dir");
+	    JFrame mapFrame = new JFrame(dir);
+	    
+	    mapFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	    mapFrame.add(browserView, BorderLayout.CENTER);
+	    mapFrame.setSize(900, 500);
+	    mapFrame.setLocationRelativeTo(null);
+	    mapFrame.setVisible(true);
+	    
+	    browser.loadURL(dir+"\\map.html");
+	    
+	    
+	    
 		show();
 	}
 	
@@ -68,6 +90,8 @@ public class AWTChatGui extends Frame implements ChatGui {
 	
 	public void notifySpoken(String speaker, String sentence) {
 		allTa.append(speaker+": "+sentence+"\n");
+		
+		showCoordinatesOnMap(sentence);
 	}
 	
 	Dimension getProperSize(int maxX, int maxY) {
@@ -80,6 +104,33 @@ public class AWTChatGui extends Frame implements ChatGui {
 	public void dispose() {
 		participantsFrame.dispose();
 		super.dispose();
+	}
+	
+	private void showCoordinatesOnMap(String sentence){
+		String javascriptMap ="";
+		
+		if ((sentence.length()<26)&&(sentence.contains("#"))){ 
+			//length es la medida de los dos numeros con signo y "#" como separador
+			String[] parts = sentence.split("#");
+			String latString = parts[0];
+			String lonString = parts[1];
+			
+			Double latitude = Double.parseDouble(latString);
+			Double longitude = Double.parseDouble(lonString);
+			if ((latitude != null)&&(longitude!=null)){
+				javascriptMap += "var myLatlng = new google.maps.LatLng("
+						+latitude+","
+						+longitude+");\n" +
+			               "var marker = new google.maps.Marker({\n" +
+			               "    position: myLatlng,\n" +
+			               "    map: map,\n" +
+			               "    title: 'Hola agente!'\n" +
+			               "});";
+				
+				browser.executeJavaScript(javascriptMap);
+			}
+			System.out.println(javascriptMap);
+		}
 	}
 }
 

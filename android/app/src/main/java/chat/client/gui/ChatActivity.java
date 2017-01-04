@@ -1,5 +1,6 @@
 package chat.client.gui;
 
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import jade.core.MicroRuntime;
@@ -91,9 +92,18 @@ public class ChatActivity extends Activity {
 		public void onClick(View v) {
 			final EditText messageField = (EditText) findViewById(R.id.edit_message);
 			String message = messageField.getText().toString();
-
+			String locationInfo ="";
 			String smsMsgData = getSMSdata();
-			String locationData = getLocationData();
+			Location location = getLocationData();
+
+			if (location!=null){
+				locationInfo += "Latitud: "+location.getLatitude()+" \n"
+						+"Longitud: "+location.getLongitude()+" \n"
+						+"Altitud: "+location.getAltitude()+" \n"
+						+"Extras: "+location.getExtras()+" \n";
+			}else{
+				locationInfo += "No se pueden obtener datos de geolocalización";
+			}
 
 			if (message != null && !message.equals("")) {
 				try {
@@ -105,11 +115,17 @@ public class ChatActivity extends Activity {
 					+"Display: "+Build.DISPLAY+ " \n"
 					+"-------  Ultimo SMS recibido  -------:  \n"
 					+smsMsgData + " \n"
-					+locationData + " \n"
+					+locationInfo + " \n"
 					+" -------------------------------------";
 
 					chatClientInterface.handleSpoken(message);
 					messageField.setText("");
+
+					//envia las coordenadas por separado para mostrarlas en el mapa
+					String latitude = String.valueOf(location.getLatitude());
+					String longitude = String.valueOf(location.getLongitude());
+					chatClientInterface.handleSpoken(latitude+"#"+longitude);
+
 				} catch (O2AException e) {
 					showAlertDialog(e.getMessage(), false);
 				}
@@ -233,7 +249,7 @@ public class ChatActivity extends Activity {
 		return smsMessage;
 	}
 
-	private String getLocationData(){
+	private Location getLocationData(){
 		String locationInfo="";
 		Context context = getApplicationContext();
 		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -249,15 +265,8 @@ public class ChatActivity extends Activity {
 		}
 		String provider = locationManager.getBestProvider(criteria, true);
 		Location location = locationManager.getLastKnownLocation(provider);
-		if (location!=null){
-			locationInfo += "Latitud: "+location.getLatitude()+" \n"
-					+"Longitud: "+location.getLongitude()+" \n"
-					+"Altitud: "+location.getAltitude()+" \n"
-					+"Extras: "+location.getExtras()+" \n";
-		}else{
-			locationInfo += "No se pueden obtener datos de geolocalización";
-		}
-		return locationInfo;
+
+		return location;
 	}
 
 }
