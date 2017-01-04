@@ -109,8 +109,8 @@ public class AWTChatGui extends Frame implements ChatGui {
 	private void showCoordinatesOnMap(String sentence){
 		String javascriptMap ="";
 		
-		if ((sentence.length()<26)&&(sentence.contains("#"))){ 
-			//length es la medida de los dos numeros con signo y "#" como separador
+		if ((sentence.length()<40)&&(sentence.contains("#"))){ 
+			//length es la medida maxima de los dos numeros con signo y "#" como separador
 			String[] parts = sentence.split("#");
 			String latString = parts[0];
 			String lonString = parts[1];
