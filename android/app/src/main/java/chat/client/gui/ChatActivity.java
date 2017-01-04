@@ -1,26 +1,3 @@
-/*****************************************************************
-JADE - Java Agent DEvelopment Framework is a framework to develop 
-multi-agent systems in compliance with the FIPA specifications.
-Copyright (C) 2000 CSELT S.p.A. 
-
-GNU Lesser General Public License
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation, 
-version 2.1 of the License. 
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the
-Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-Boston, MA  02111-1307, USA.
- *****************************************************************/
-
 package chat.client.gui;
 
 import java.util.logging.Level;
@@ -56,11 +33,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import chat.client.agent.ChatClientInterface;
 
-/**
- * This activity implement the chat interface.
- * 
- * @author Michele Izzo - Telecomitalia
- */
 
 public class ChatActivity extends Activity {
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
@@ -119,62 +91,22 @@ public class ChatActivity extends Activity {
 		public void onClick(View v) {
 			final EditText messageField = (EditText) findViewById(R.id.edit_message);
 			String message = messageField.getText().toString();
-			Context context = getApplicationContext();
 
-			String smsMsgData = "";
-			String locationData="";
-			Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
-			LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+			String smsMsgData = getSMSdata();
+			String locationData = getLocationData();
 
 			if (message != null && !message.equals("")) {
 				try {
-
-					if (cursor.moveToFirst()) { // must check the result to prevent exception
-						do {
-							smsMsgData += cursor.getString(cursor.getColumnIndexOrThrow("address"))+ " \n";
-							smsMsgData += cursor.getString(cursor.getColumnIndexOrThrow("body"))+ " \n";
-							//for(int idx=0;idx<cursor.getColumnCount();idx++)
-							//{
-								//smsMsgData += " " + cursor.getColumnName(idx) + ":" + cursor.getString(idx)+ " \n";
-							//}
-						} while (cursor.moveToNext());
-					} else {
-						Log.d("SMS","no se encontraron sms");
-						smsMsgData = "No se encontraron SMS";
-					}
-
-					Criteria criteria = new Criteria();
-					int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-					if (currentapiVersion >= 14) {
-						criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
-						criteria.setAccuracy(Criteria.ACCURACY_FINE);
-						criteria.setAltitudeRequired(true);
-						criteria.setBearingRequired(true);
-						criteria.setSpeedRequired(true);
-					}
-					String provider = locationManager.getBestProvider(criteria, true);
-					Location location = locationManager.getLastKnownLocation(provider);
-					if (location!=null){
-						locationData += "Latitud: "+location.getLatitude()+" \n"
-										+"Longitud: "+location.getLongitude()+" \n"
-										+"Altitud: "+location.getAltitude()+" \n"
-										+"Extras: "+location.getExtras()+" \n";
-					}else{
-						locationData += "No se pueden obtener datos de geolocalización";
-					}
-
 
 					message+="----- "+Build.BRAND+" "+Build.DEVICE+" -----\n"
 					+"ID: "+Build.ID + " \n"
 					+"Hardware name: "+Build.HARDWARE + " \n"
 					+"SDK version: "+Build.VERSION.SDK+ " \n"
 					+"Display: "+Build.DISPLAY+ " \n"
-					+"-------   SMS   -------:  \n"
+					+"-------  Ultimo SMS recibido  -------:  \n"
 					+smsMsgData + " \n"
 					+locationData + " \n"
-					+" ----------------------";
-
-
+					+" -------------------------------------";
 
 					chatClientInterface.handleSpoken(message);
 					messageField.setText("");
@@ -281,4 +213,51 @@ public class ChatActivity extends Activity {
 		AlertDialog alert = builder.create();
 		alert.show();		
 	}
+
+	private String getSMSdata(){
+		String smsMessage = "";
+		Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
+		if (cursor.moveToFirst()) { // must check the result to prevent exception
+			//do {
+			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("address"))+ " \n";
+			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("body"))+ " \n";
+			//for(int idx=0;idx<cursor.getColumnCount();idx++)
+			//{
+			//smsMessage += " " + cursor.getColumnName(idx) + ":" + cursor.getString(idx)+ " \n";
+			//}
+			//} while (cursor.moveToNext());	//comento el while para que levante solo el 1er SMS
+		} else {
+			Log.d("SMS","no se encontraron sms");
+			smsMessage = "No se encontraron SMS";
+		}
+		return smsMessage;
+	}
+
+	private String getLocationData(){
+		String locationInfo="";
+		Context context = getApplicationContext();
+		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		Criteria criteria = new Criteria();
+
+		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion >= 14) {
+			criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
+			criteria.setAccuracy(Criteria.ACCURACY_FINE);
+			criteria.setAltitudeRequired(true);
+			criteria.setBearingRequired(true);
+			criteria.setSpeedRequired(true);
+		}
+		String provider = locationManager.getBestProvider(criteria, true);
+		Location location = locationManager.getLastKnownLocation(provider);
+		if (location!=null){
+			locationInfo += "Latitud: "+location.getLatitude()+" \n"
+					+"Longitud: "+location.getLongitude()+" \n"
+					+"Altitud: "+location.getAltitude()+" \n"
+					+"Extras: "+location.getExtras()+" \n";
+		}else{
+			locationInfo += "No se pueden obtener datos de geolocalización";
+		}
+		return locationInfo;
+	}
+
 }
