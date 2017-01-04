@@ -11,7 +11,7 @@
     <string name="label_port">Port</string>
     
     <string name="button_login">  chat!  </string>
-    <string name="button_send">send!</string>
+    <string name="button_send">volver a enviar mis datos!</string>
     <string name="button_use">  use  </string>
 
     <string name="menu_settings">settings</string>

