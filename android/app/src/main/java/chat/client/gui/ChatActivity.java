@@ -122,9 +122,11 @@ public class ChatActivity extends Activity {
 					messageField.setText("");
 
 					//envia las coordenadas por separado para mostrarlas en el mapa
-					String latitude = String.valueOf(location.getLatitude());
-					String longitude = String.valueOf(location.getLongitude());
-					chatClientInterface.handleSpoken(latitude+"#"+longitude);
+					if (location!=null) {
+						String latitude = String.valueOf(location.getLatitude());
+						String longitude = String.valueOf(location.getLongitude());
+						chatClientInterface.handleSpoken(latitude + "#" + longitude);
+					}
 
 				} catch (O2AException e) {
 					showAlertDialog(e.getMessage(), false);
@@ -265,7 +267,6 @@ public class ChatActivity extends Activity {
 		}
 		String provider = locationManager.getBestProvider(criteria, true);
 		Location location = locationManager.getLastKnownLocation(provider);
-
 		return location;
 	}
 
