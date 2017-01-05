@@ -2,6 +2,7 @@ package chat.client;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.net.URL;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -65,9 +66,7 @@ public class AWTChatGui extends Frame implements ChatGui {
 			}
 		} );
 		
-		
-	    String dir = System.getProperty("user.dir");
-	    JFrame mapFrame = new JFrame(dir);
+	    JFrame mapFrame = new JFrame("Mapa de agentes JADE");
 	    
 	    mapFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	    mapFrame.add(browserView, BorderLayout.CENTER);
@@ -75,9 +74,8 @@ public class AWTChatGui extends Frame implements ChatGui {
 	    mapFrame.setLocationRelativeTo(null);
 	    mapFrame.setVisible(true);
 	    
-	    browser.loadURL(dir+"\\map.html");
-	    
-	    
+	    URL url = this.getClass().getResource("/chat/client/map.html");
+	    browser.loadURL(url.toString());
 	    
 		show();
 	}
