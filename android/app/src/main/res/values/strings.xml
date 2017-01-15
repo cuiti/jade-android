@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Jade Chat</string>
-    <string name="app_title_main">Jade Chat</string>
-    <string name="app_title_settings">Jade Chat Settings</string>    
-    <string name="app_title_chat">Jade Chat Room</string>    
-    <string name="app_title_participants">Jade Chat Participants</string>    
+    <string name="app_name">Jade Bolino/Cuitiño</string>
+    <string name="app_title_main">Jade Bolino/Cuitiño</string>
+    <string name="app_title_settings">Configuración</string>
+    <string name="app_title_chat">Información de los dispositivos</string>
+    <string name="app_title_participants">Jade Participants</string>
 
     <string name="label_nick">Enter Nickname</string>
     <string name="label_host">Host</string>
