@@ -11,8 +11,9 @@
     <string name="label_port">Port</string>
     
     <string name="button_login">  chat!  </string>
-    <string name="button_send">volver a enviar mis datos!</string>
+    <string name="button_send">Volver a enviar mis datos!</string>
     <string name="button_use">  use  </string>
+    <string name="button_salir">Salir de la app</string>
 
     <string name="menu_settings">settings</string>
     <string name="menu_exit">exit</string>
@@ -26,4 +27,5 @@
     
     <string name="msg_interface_exc">Internal error!</string>
     <string name="msg_controller_exc">Server error!</string>
+
 </resources>

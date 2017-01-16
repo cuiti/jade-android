@@ -78,7 +78,11 @@ public class ChatActivity extends Activity {
 
 		Button button = (Button) findViewById(R.id.button_send);
 		button.setOnClickListener(buttonSendListener);
+
 		sendDeviceInformation();
+
+		Button boton_salir = (Button) findViewById(R.id.button_salir);
+		boton_salir.setOnClickListener(botonSalirListener);
 	}
 
 	@Override
@@ -101,6 +105,15 @@ public class ChatActivity extends Activity {
 			sendDeviceInformation();
 		}
 	};
+
+	private OnClickListener botonSalirListener = new OnClickListener() {
+		public void onClick(View v) {
+			//Boton para salir de la app
+			moveTaskToBack(true);
+			finish();
+		}
+	};
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

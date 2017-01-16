@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_height="fill_parent"
 	android:layout_width="fill_parent">
+
 	<ScrollView android:layout_marginBottom="50dip" android:id="@+id/scroller"
 		android:layout_height="fill_parent" android:layout_width="fill_parent">
 		<TextView android:id="@+id/chatTextView"
 			android:paddingBottom="8dip" android:layout_width="fill_parent"
-			android:layout_height="fill_parent" />
+			android:layout_height="wrap_content" />
 	</ScrollView>
+
 	<RelativeLayout android:layout_marginTop="-50dip"
 		android:gravity="bottom" android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
@@ -15,8 +17,17 @@
 		<Button android:text="@string/button_send" android:id="@+id/button_send"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
-			android:layout_centerHorizontal="true">
+			android:layout_toRightOf="@+id/button_salir">
 		</Button>
+
+		<Button
+			android:text="@string/button_salir"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/button_salir"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentLeft="true"
+			android:layout_marginLeft="12dp" />
 
 		<!--<EditText android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:layout_toLeftOf="@id/button_send"
