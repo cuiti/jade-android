@@ -49,6 +49,8 @@ public class MainActivity extends Activity {
 	private MyHandler myHandler;
 
 	private TextView infoTextView;
+	private EditText campoDireccionIP;
+	private EditText campoNumeroPuerto;
 
 	private String nickname;
 
@@ -74,7 +76,19 @@ public class MainActivity extends Activity {
 		button.setOnClickListener(buttonChatListener);
 
 		infoTextView = (TextView) findViewById(R.id.infoTextView);
-		infoTextView.setText("");
+		infoTextView.setText("");	//este texto es el que se usa para avisar cuando se está conectando
+
+		//carga de las preferencias almacenadas
+		SharedPreferences settings = getSharedPreferences("jadePreferencesFile",0);
+
+		String host = settings.getString("defaultHost", "");
+		String puerto = settings.getString("defaultPort", "");
+
+		campoDireccionIP = (EditText) findViewById(R.id.direccionIP);
+		campoDireccionIP.setText(host);
+
+		campoNumeroPuerto = (EditText) findViewById(R.id.numeroDePuerto);
+		campoNumeroPuerto.setText(puerto);
 	}
 
 	@Override
@@ -97,6 +111,15 @@ public class MainActivity extends Activity {
 
 	private OnClickListener buttonChatListener = new OnClickListener() {
 		public void onClick(View v) {
+
+			//persistencia de los campos puerto e IP
+			SharedPreferences settings = getSharedPreferences("jadePreferencesFile", 0);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putString("defaultHost", campoDireccionIP.getText().toString());
+			editor.putString("defaultPort", campoNumeroPuerto.getText().toString());
+			editor.commit();
+
+
 			final EditText nameField = (EditText) findViewById(R.id.edit_nickname);
 			nickname = nameField.getText().toString();
 			if (!checkName(nickname)) {
@@ -104,8 +127,6 @@ public class MainActivity extends Activity {
 				myHandler.postError(getString(R.string.msg_nickname_not_valid));
 			} else {
 				try {
-					SharedPreferences settings = getSharedPreferences(
-							"jadePreferencesFile", 0);
 					String host = settings.getString("defaultHost", "");
 					String port = settings.getString("defaultPort", "");
 					infoTextView.setText(getString(R.string.msg_connecting_to)

@@ -9,9 +9,51 @@
 		android:layout_width="match_parent" android:id="@+id/edit_nickname">
 		<requestFocus></requestFocus>
 	</EditText>
+
+	<TextView
+		android:text="Dirección IP"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/textView"
+		/>
+
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:inputType="numberDecimal"
+		android:digits="0123456789."
+		android:id="@+id/direccionIP" />
+
+	<TextView
+		android:text="Número de puerto"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/textView2" />
+
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:inputType="number"
+		android:ems="10"
+		android:id="@+id/numeroDePuerto" />
+
 	<Button android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal" android:text="@string/button_login"
 		android:layout_width="wrap_content" android:id="@+id/button_chat"></Button>
 	<TextView android:layout_height="wrap_content" android:id="@+id/infoTextView"
 		android:layout_width="wrap_content" android:text="info"></TextView>
+
+	<ImageView
+		android:src="@drawable/jade"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/imageView" />
+
+	<TextView
+		android:text="@string/nombresIntegrantes"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:id="@+id/nombresIntegrantes" />
 </LinearLayout>
