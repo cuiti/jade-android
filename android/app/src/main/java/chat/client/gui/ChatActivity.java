@@ -23,9 +23,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -37,13 +34,11 @@ import chat.client.agent.ChatClientInterface;
 public class ChatActivity extends Activity {
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
 
-	static final int PARTICIPANTS_REQUEST = 0;
-
 	private MyReceiver myReceiver;
 
-	private String nickname;
+	private String nombreDispositivo;
 	private ChatClientInterface chatClientInterface;
-	private String DEVICE_NAME = Build.BRAND + " " + Build.DEVICE;
+	private String DISPOSITIVO_MARCA_MODELO = Build.BRAND + " " + Build.DEVICE;
 
 
 	@Override
@@ -52,11 +47,11 @@ public class ChatActivity extends Activity {
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			nickname = extras.getString("nickname");
+			nombreDispositivo = extras.getString("nombreDispositivo");
 		}
 
 		try {
-			chatClientInterface = MicroRuntime.getAgent(nickname)
+			chatClientInterface = MicroRuntime.getAgent(nombreDispositivo)
 					.getO2AInterface(ChatClientInterface.class);
 		} catch (StaleProxyException e) {
 			showAlertDialog(getString(R.string.msg_interface_exc), true);
@@ -77,9 +72,9 @@ public class ChatActivity extends Activity {
 		setContentView(R.layout.chat);
 
 		Button button = (Button) findViewById(R.id.button_send);
-		button.setOnClickListener(buttonSendListener);
+		button.setOnClickListener(botonEnviarListener);
 
-		sendDeviceInformation();
+		enviarInformacionDelDispositivo();
 
 		Button boton_salir = (Button) findViewById(R.id.boton_salir);
 		boton_salir.setOnClickListener(botonSalirListener);
@@ -95,14 +90,14 @@ public class ChatActivity extends Activity {
 	protected void onStop() {
 		super.onStop();
 		chatClientInterface.handleSpoken("---------------------------------------------- \n" +
-							"El dispositivo " + DEVICE_NAME + " ha salido del sistema \n" +
+							"El dispositivo " + DISPOSITIVO_MARCA_MODELO + " ha salido del sistema \n" +
 							"-----------------------------------------------");
 	}
 
-	private OnClickListener buttonSendListener = new OnClickListener() {
+	private OnClickListener botonEnviarListener = new OnClickListener() {
 		public void onClick(View v) {
 			//Boton para volver a enviar los datos
-			sendDeviceInformation();
+			enviarInformacionDelDispositivo();
 		}
 	};
 
@@ -115,45 +110,45 @@ public class ChatActivity extends Activity {
 	};
 
 
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.chat_menu, menu);
 		return true;
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.menu_participants:
 				Intent showParticipants = new Intent(ChatActivity.this,
 						ParticipantsActivity.class);
-				showParticipants.putExtra("nickname", nickname);
+				showParticipants.putExtra("nombreDispositivo", nombreDispositivo);
 				startActivityForResult(showParticipants, PARTICIPANTS_REQUEST);
 				return true;
 			case R.id.menu_clear:
-			/*
-			Intent broadcast = new Intent();
-			broadcast.setAction("jade.demo.chat.CLEAR_CHAT");
-			logger.info("Sending broadcast " + broadcast.getAction());
-			sendBroadcast(broadcast);
-			*/
+
+			//Intent broadcast = new Intent();
+			//broadcast.setAction("jade.demo.chat.CLEAR_CHAT");
+			//logger.info("Sending broadcast " + broadcast.getAction());
+			//sendBroadcast(broadcast);
+
 				final TextView chatField = (TextView) findViewById(R.id.chatTextView);
 				chatField.setText("");
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
 		}
-	}
+	}*/
 
-	@Override
+	/*@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == PARTICIPANTS_REQUEST) {
 			if (resultCode == RESULT_OK) {
 				// TODO: A partecipant was picked. Send a private message.
 			}
 		}
-	}
+	}*/
 
 
 	private class MyReceiver extends BroadcastReceiver {
@@ -212,25 +207,25 @@ public class ChatActivity extends Activity {
 		alert.show();
 	}
 
-	private void sendDeviceInformation() {
-		String locationInfo = "";
-		String message = "";
+	private void enviarInformacionDelDispositivo() {
+		String ubicacionInfo = "";
+		String mensaje = "";
 		Date fecha = new Date();
 		String smsMsgData = getSMSdata();
-		Location location = getLocationData();
+		Location geolocalizacion = getInformacionGeolocalizacion();
 
-		if (location != null) {
-			locationInfo += "Latitud: " + location.getLatitude() + " \n"
-					+ "Longitud: " + location.getLongitude() + " \n"
-					+ "Altitud: " + location.getAltitude() + " \n"
-					+ "Extras: " + location.getExtras() + " \n";
+		if (geolocalizacion != null) {
+			ubicacionInfo += "Latitud: " + geolocalizacion.getLatitude() + " \n"
+					+ "Longitud: " + geolocalizacion.getLongitude() + " \n"
+					+ "Altitud: " + geolocalizacion.getAltitude() + " \n"
+					+ "Extras: " + geolocalizacion.getExtras() + " \n";
 		} else {
-			locationInfo += "No se pueden obtener datos de geolocalización";
+			ubicacionInfo += "No se pueden obtener datos de geolocalización";
 		}
 
 		try {
 
-			message += "----- " + DEVICE_NAME + " -----\n"
+			mensaje += "----- " + DISPOSITIVO_MARCA_MODELO + " -----\n"
 					+ "Fecha: "+fecha.toLocaleString()
 					+ "ID: " + Build.ID + " \n"
 					+ "Hardware name: " + Build.HARDWARE + " \n"
@@ -238,15 +233,15 @@ public class ChatActivity extends Activity {
 					+ "Display: " + Build.DISPLAY + " \n"
 					+ "-------  Ultimo SMS recibido  -------:  \n"
 					+ smsMsgData + " \n"
-					+ locationInfo + " \n"
+					+ ubicacionInfo + " \n"
 					+ " -------------------------------------";
 
-			chatClientInterface.handleSpoken(message);
+			chatClientInterface.handleSpoken(mensaje);
 
 			//envia las coordenadas por separado para mostrarlas en el mapa
-			if (location != null) { //location puede ser null cuando el usuario dehabilita la geolocalizacion
-				String latitude = String.valueOf(location.getLatitude());
-				String longitude = String.valueOf(location.getLongitude());
+			if (geolocalizacion != null) { //location puede ser null cuando el usuario dehabilita la geolocalizacion
+				String latitude = String.valueOf(geolocalizacion.getLatitude());
+				String longitude = String.valueOf(geolocalizacion.getLongitude());
 				chatClientInterface.handleSpoken(latitude + "#" + longitude);
 			}
 
@@ -276,8 +271,8 @@ public class ChatActivity extends Activity {
 		return smsMessage;
 	}
 
-	private Location getLocationData() {
-		String locationInfo = "";
+	private Location getInformacionGeolocalizacion() {
+		//String locationInfo = "";
 		Context context = getApplicationContext();
 		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		Criteria criteria = new Criteria();

@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
 
 	private MicroRuntimeServiceBinder microRuntimeServiceBinder;
-	private ServiceConnection serviceConnection;
+	private ServiceConnection serviceConnection;  //para usar el servicio de android
 
 	static final int CHAT_REQUEST = 0;
 	static final int SETTINGS_REQUEST = 1;
@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 	private EditText campoDireccionIP;
 	private EditText campoNumeroPuerto;
 
-	private String nickname;
+	private String nombreDispositivo;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +100,8 @@ public class MainActivity extends Activity {
 
 	private OnClickListener buttonChatListener = new OnClickListener() {
 		public void onClick(View v) {
+			//el nombre de usuario se genera con marca + modelo + entero random
+			nombreDispositivo = Build.BRAND + "-" + Build.DEVICE+(int)Math.floor(Math.random() * 999)+1;
 
 			//persistencia de los campos puerto e IP
 			SharedPreferences settings = getSharedPreferences("jadePreferencesFile", 0);
@@ -108,19 +110,14 @@ public class MainActivity extends Activity {
 			editor.putString("defaultPort", campoNumeroPuerto.getText().toString());
 			editor.commit();
 
-
-			//final EditText nameField = (EditText) findViewById(R.id.edit_nickname);
-			nickname = Build.BRAND + "-" + Build.DEVICE+(int)Math.floor(Math.random() * 999)+1;
-			//el nombre de usuario se genera con marca + modelo + entero random
-
 			try {
 				String host = settings.getString("defaultHost", "");
 				String port = settings.getString("defaultPort", "");
 				infoTextView.setText(getString(R.string.msg_connecting_to)
 						+ " " + host + ":" + port + "...");
-				startChat(nickname, host, port, agentStartupCallback);
+				startChat(nombreDispositivo, host, port, agentStartupCallback);
 			} catch (Exception ex) {
-				logger.log(Level.SEVERE, "Unexpected exception creating chat agent!");
+				logger.log(Level.SEVERE, "excepcion al inicializar el agente!");
 				infoTextView.setText(getString(R.string.msg_unexpected));
 			}
 		}
@@ -187,7 +184,7 @@ public class MainActivity extends Activity {
 			if (action.equalsIgnoreCase("jade.demo.chat.SHOW_CHAT")) {
 				Intent showChat = new Intent(MainActivity.this,
 						ChatActivity.class);
-				showChat.putExtra("nickname", nickname);
+				showChat.putExtra("nombreDispositivo", nombreDispositivo);
 				MainActivity.this
 						.startActivityForResult(showChat, CHAT_REQUEST);
 			}
@@ -218,21 +215,24 @@ public class MainActivity extends Activity {
 			final String port,
 			final RuntimeCallback<AgentController> agentStartupCallback) {
 
-		final Properties profile = new Properties();
-		profile.setProperty(Profile.MAIN_HOST, host);
-		profile.setProperty(Profile.MAIN_PORT, port);
-		profile.setProperty(Profile.MAIN, Boolean.FALSE.toString());
-		profile.setProperty(Profile.JVM, Profile.ANDROID);
+		//la clase Properties es de JADE LEAP para guardar informacion clave valor
+		//Profile es de JADE core, se usa para las propiedades de un container
+
+		final Properties perfil = new Properties();
+		perfil.setProperty(Profile.MAIN_HOST, host);
+		perfil.setProperty(Profile.MAIN_PORT, port);
+		perfil.setProperty(Profile.MAIN, Boolean.FALSE.toString());
+		perfil.setProperty(Profile.JVM, Profile.ANDROID);
 
 		if (AndroidHelper.isEmulator()) {
 			// Emulator: this is needed to work with emulated devices
-			profile.setProperty(Profile.LOCAL_HOST, AndroidHelper.LOOPBACK);
+			perfil.setProperty(Profile.LOCAL_HOST, AndroidHelper.LOOPBACK);
 		} else {
-			profile.setProperty(Profile.LOCAL_HOST,
+			perfil.setProperty(Profile.LOCAL_HOST,
 					AndroidHelper.getLocalIPAddress());
 		}
 		// Emulator: this is not really needed on a real device
-		profile.setProperty(Profile.LOCAL_PORT, "2000");
+		perfil.setProperty(Profile.LOCAL_PORT, "2000");
 
 		if (microRuntimeServiceBinder == null) {
 			serviceConnection = new ServiceConnection() {
@@ -240,8 +240,8 @@ public class MainActivity extends Activity {
 						IBinder service) {
 					microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
 					logger.log(Level.INFO, "Gateway successfully bound to MicroRuntimeService");
-					startContainer(nickname, profile, agentStartupCallback);
-				};
+					startContainer(nickname, perfil, agentStartupCallback);
+				}
 
 				public void onServiceDisconnected(ComponentName className) {
 					microRuntimeServiceBinder = null;
@@ -254,11 +254,11 @@ public class MainActivity extends Activity {
 					Context.BIND_AUTO_CREATE);
 		} else {
 			logger.log(Level.INFO, "MicroRumtimeGateway already binded to service");
-			startContainer(nickname, profile, agentStartupCallback);
+			startContainer(nickname, perfil, agentStartupCallback);
 		}
 	}
 
-	private void startContainer(final String nickname, Properties profile,
+	private void startContainer(final String nombreDispositivo, Properties profile,
 			final RuntimeCallback<AgentController> agentStartupCallback) {
 		if (!MicroRuntime.isRunning()) {
 			microRuntimeServiceBinder.startAgentContainer(profile,
@@ -266,7 +266,7 @@ public class MainActivity extends Activity {
 						@Override
 						public void onSuccess(Void thisIsNull) {
 							logger.log(Level.INFO, "Successfully start of the container...");
-							startAgent(nickname, agentStartupCallback);
+							startAgent(nombreDispositivo, agentStartupCallback);
 						}
 
 						@Override
@@ -275,13 +275,13 @@ public class MainActivity extends Activity {
 						}
 					});
 		} else {
-			startAgent(nickname, agentStartupCallback);
+			startAgent(nombreDispositivo, agentStartupCallback);
 		}
 	}
 
-	private void startAgent(final String nickname,
+	private void startAgent(final String nombreDispositivo,
 			final RuntimeCallback<AgentController> agentStartupCallback) {
-		microRuntimeServiceBinder.startAgent(nickname,
+		microRuntimeServiceBinder.startAgent(nombreDispositivo,
 				ChatClientAgent.class.getName(),
 				new Object[] { getApplicationContext() },
 				new RuntimeCallback<Void>() {
@@ -291,7 +291,7 @@ public class MainActivity extends Activity {
 								+ ChatClientAgent.class.getName() + "...");
 						try {
 							agentStartupCallback.onSuccess(MicroRuntime
-									.getAgent(nickname));
+									.getAgent(nombreDispositivo));
 						} catch (ControllerException e) {
 							// Should never happen
 							agentStartupCallback.onFailure(e);

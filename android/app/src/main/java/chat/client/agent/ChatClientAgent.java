@@ -67,7 +67,7 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 		cm.setValidationMode(false);
 
 		// Add initial behaviours
-		addBehaviour(new ParticipantsManager(this));
+		//addBehaviour(new ParticipantsManager(this));
 		addBehaviour(new ChatListener(this));
 
 		// Initialize the message used to convey spoken sentences
@@ -106,7 +106,7 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 	 * participant and keeps the list of participants up to date by managing the
 	 * information received from the ChatManager agent.
 	 */
-	class ParticipantsManager extends CyclicBehaviour {
+	/*class ParticipantsManager extends CyclicBehaviour {
 		private static final long serialVersionUID = -4845730529175649756L;
 		private MessageTemplate template;
 
@@ -162,7 +162,7 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 				block();
 			}
 		}
-	} // END of inner class ParticipantsManager
+	} */      // END of inner class ParticipantsManager
 
 	/**
 	 * Inner class ChatListener. This behaviour registers as a chat participant
