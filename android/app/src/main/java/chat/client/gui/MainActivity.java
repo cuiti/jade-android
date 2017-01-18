@@ -23,13 +23,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -100,15 +98,6 @@ public class MainActivity extends Activity {
 		logger.log(Level.INFO, "Destroy activity!");
 	}
 
-	private static boolean checkName(String name) {
-		if (name == null || name.trim().equals("")) {
-			return false;
-		}
-		// FIXME: should also check that name is composed
-		// of letters and digits only
-		return true;
-	}
-
 	private OnClickListener buttonChatListener = new OnClickListener() {
 		public void onClick(View v) {
 
@@ -120,48 +109,22 @@ public class MainActivity extends Activity {
 			editor.commit();
 
 
-			final EditText nameField = (EditText) findViewById(R.id.edit_nickname);
-			nickname = nameField.getText().toString();
-			if (!checkName(nickname)) {
-				logger.log(Level.INFO, "Invalid nickname!");
-				myHandler.postError(getString(R.string.msg_nickname_not_valid));
-			} else {
-				try {
-					String host = settings.getString("defaultHost", "");
-					String port = settings.getString("defaultPort", "");
-					infoTextView.setText(getString(R.string.msg_connecting_to)
-							+ " " + host + ":" + port + "...");
-					startChat(nickname, host, port, agentStartupCallback);
-				} catch (Exception ex) {
-					logger.log(Level.SEVERE, "Unexpected exception creating chat agent!");
-					infoTextView.setText(getString(R.string.msg_unexpected));
-				}
+			//final EditText nameField = (EditText) findViewById(R.id.edit_nickname);
+			nickname = Build.BRAND + "-" + Build.DEVICE+(int)Math.floor(Math.random() * 999)+1;
+			//el nombre de usuario se genera con marca + modelo + entero random
+
+			try {
+				String host = settings.getString("defaultHost", "");
+				String port = settings.getString("defaultPort", "");
+				infoTextView.setText(getString(R.string.msg_connecting_to)
+						+ " " + host + ":" + port + "...");
+				startChat(nickname, host, port, agentStartupCallback);
+			} catch (Exception ex) {
+				logger.log(Level.SEVERE, "Unexpected exception creating chat agent!");
+				infoTextView.setText(getString(R.string.msg_unexpected));
 			}
 		}
 	};
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_menu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_settings:
-			Intent showSettings = new Intent(MainActivity.this,
-					SettingsActivity.class);
-			MainActivity.this.startActivityForResult(showSettings,
-					SETTINGS_REQUEST);
-			return true;
-		case R.id.menu_exit:
-			finish();
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

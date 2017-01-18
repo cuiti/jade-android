@@ -6,22 +6,19 @@
     <string name="app_title_chat">Información de los dispositivos</string>
     <string name="app_title_participants">Jade Participants</string>
 
-    <string name="label_nick">Enter Nickname</string>
-    <string name="label_host">Host</string>
-    <string name="label_port">Port</string>
-    
-    <string name="button_login">  Comenzar!  </string>
-    <string name="button_send">Volver a enviar mis datos!</string>
-    <string name="button_use">  use  </string>
-    <string name="button_salir">Salir de la app</string>
+    <string name="label_host">Dirección IP</string>
+    <string name="label_port">Número de puerto</string>
     <string name="nombresIntegrantes">\n Trabajo práctico final de Programación Distribuída y Tiempo Real.\n Alumnos Patricio Bolino y Alfonso Cuitiño</string>
 
-    <string name="menu_settings">settings</string>
+    <string name="button_login">  Comenzar!  </string>
+    <string name="button_send">Volver a enviar mis datos!</string>
+    <string name="boton_salir">Salir de la app</string>
+
     <string name="menu_exit">exit</string>
     <string name="menu_participants">participants</string>
     <string name="menu_clear">clear</string>
     
-    <string name="msg_connecting_to">Connecting to</string>
+    <string name="msg_connecting_to">Conectando a</string>
     <string name="msg_nickname_in_use">Nickname already in use!</string>
     <string name="msg_nickname_not_valid">Invalid nickname!</string>
     <string name="msg_unexpected">Unexpected error!</string>

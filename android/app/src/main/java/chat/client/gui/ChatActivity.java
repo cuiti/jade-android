@@ -81,7 +81,7 @@ public class ChatActivity extends Activity {
 
 		sendDeviceInformation();
 
-		Button boton_salir = (Button) findViewById(R.id.button_salir);
+		Button boton_salir = (Button) findViewById(R.id.boton_salir);
 		boton_salir.setOnClickListener(botonSalirListener);
 	}
 

@@ -2,16 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:weightSum="1">
-	<TextView android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:textSize="20sp"
-		android:text="@string/label_nick" />
-	<EditText android:layout_height="wrap_content"
-		android:layout_width="match_parent" android:id="@+id/edit_nickname">
-		<requestFocus></requestFocus>
-	</EditText>
 
 	<TextView
-		android:text="Dirección IP"
+		android:text="@string/label_host"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/textView"
@@ -26,7 +19,7 @@
 		android:id="@+id/direccionIP" />
 
 	<TextView
-		android:text="Número de puerto"
+		android:text="@string/label_port"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/textView2" />
@@ -39,10 +32,17 @@
 		android:id="@+id/numeroDePuerto" />
 
 	<Button android:layout_height="wrap_content"
-		android:layout_gravity="center_horizontal" android:text="@string/button_login"
-		android:layout_width="wrap_content" android:id="@+id/button_chat"></Button>
-	<TextView android:layout_height="wrap_content" android:id="@+id/infoTextView"
-		android:layout_width="wrap_content" android:text="info"></TextView>
+		android:layout_gravity="center_horizontal"
+		android:text="@string/button_login"
+		android:layout_width="wrap_content"
+		android:id="@+id/button_chat">
+	</Button>
+
+	<TextView android:layout_height="wrap_content"
+		android:id="@+id/infoTextView"
+		android:layout_width="wrap_content"
+		android:text="info">
+	</TextView>
 
 	<ImageView
 		android:src="@drawable/jade"
