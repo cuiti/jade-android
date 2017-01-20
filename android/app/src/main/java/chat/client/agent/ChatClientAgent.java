@@ -28,7 +28,7 @@ import android.content.Context;
  * This agent implements the logic of the chat client running on the user
  * terminal. User interactions are handled by the ChatGui in a
  * terminal-dependent way. The ChatClientAgent performs 3 types of behaviours: -
- * ParticipantsManager. A CyclicBehaviour that keeps the list of participants up
+ * AdministradorDeSuscripcion. A CyclicBehaviour that keeps the list of participants up
  * to date on the basis of the information received from the ChatManagerAgent.
  * This behaviour is also in charge of subscribing as a participant to the
  * ChatManagerAgent. - ChatListener. A CyclicBehaviour that handles messages
@@ -67,7 +67,7 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 		cm.setValidationMode(false);
 
 		// Add initial behaviours
-		//addBehaviour(new ParticipantsManager(this));
+		addBehaviour(new AdministradorDeSuscripcion(this));
 		addBehaviour(new ChatListener(this));
 
 		// Initialize the message used to convey spoken sentences
@@ -101,31 +101,45 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 		context.sendBroadcast(broadcast);
 	}
 	
+
 	/**
-	 * Inner class ParticipantsManager. This behaviour registers as a chat
-	 * participant and keeps the list of participants up to date by managing the
-	 * information received from the ChatManager agent.
+	 * Este comportamiento sirve para registrar al agente mobile contra el
+	 * agente manager que se ejecuta en el desktop, usando los mensajes ACL
+	 * Los comportamientos cyclic viven durante toda la ejecución del agente,
+	 * por eso sirve para quedar escuchando al manager y que vaya llegando la nueva info
 	 */
-	/*class ParticipantsManager extends CyclicBehaviour {
+	class AdministradorDeSuscripcion extends CyclicBehaviour {
 		private static final long serialVersionUID = -4845730529175649756L;
 		private MessageTemplate template;
 
-		ParticipantsManager(Agent a) {
+		AdministradorDeSuscripcion(Agent a) {
 			super(a);
 		}
 
 		public void onStart() {
-			// Subscribe as a chat participant to the ChatManager agent
-			ACLMessage subscription = new ACLMessage(ACLMessage.SUBSCRIBE);
-			subscription.setLanguage(codec.getName());
-			subscription.setOntology(onto.getName());
+			/**
+			 * Un ACL message es un mensaje del estandar "Agent Communication Language" que
+			 * es provisto y usado por JADE.
+			 * Declarando el tipo "subscribe" ya no necesitamos ponerle mensaje porque se
+			 * usa solo para esto
+			 */
+			ACLMessage suscripcion = new ACLMessage(ACLMessage.SUBSCRIBE);
+			suscripcion.setLanguage(codec.getName());
+			suscripcion.setOntology(onto.getName());
 			String convId = "C-" + myAgent.getLocalName();
-			subscription.setConversationId(convId);
-			subscription
-					.addReceiver(new AID(CHAT_MANAGER_NAME, AID.ISLOCALNAME));
-			myAgent.send(subscription);
-			// Initialize the template used to receive notifications
-			// from the ChatManagerAgent
+			suscripcion.setConversationId(convId);
+			/**
+			 *  AID es AgentID, esta clase se usa internamente en JADE para mantener los datos de
+			 *  los agentes en las tablas de agentes.
+			 * Con esta línea el agente se agrega a si mismo como receptor de la suscripcion
+			   */
+			suscripcion.addReceiver(new AID(CHAT_MANAGER_NAME, AID.ISLOCALNAME));
+			myAgent.send(suscripcion);
+			/**
+			 * La clase MessageTemplate sirve para filtrar la información dentro de los ACLmessage,
+			 * en este caso nos interesa recibir la informacion que esté dirigida a este agente,
+			 * para eso usamos el conversation ID
+			 */
 			template = MessageTemplate.MatchConversationId(convId);
 		}
 
@@ -162,7 +176,7 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 				block();
 			}
 		}
-	} */      // END of inner class ParticipantsManager
+	} 
 
 	/**
 	 * Inner class ChatListener. This behaviour registers as a chat participant
