@@ -2,9 +2,7 @@ package chat.client;
 
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.net.URL;
-
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -14,35 +12,34 @@ import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 import chat.client.agent.ChatClientAgent;
 
-public class AWTChatGui implements ChatGui {
+public class ControlPanelGUI implements ChatGui {
 	private ChatClientAgent chatClientAgent;
 	private JFrame frame;
 	private JTextArea textArea;
 	private Browser browser;
 	private BrowserView browserView;    
 
-	public AWTChatGui(ChatClientAgent chatClientAgent){
+	public ControlPanelGUI(ChatClientAgent chatClientAgent){
     	this.setChatClientAgent(chatClientAgent);
     	this.setFrame(new JFrame("Panel de Conexiones"));
-    	this.setTextArea(new JTextArea(30,10));
+    	this.setTextArea(new JTextArea(30,30));
     	this.setBrowser(new Browser());
     	this.setBrowserView(new BrowserView(this.getBrowser()));
     	this.initialize();
     }
 	
 	private void initialize() {
-		this.getFrame().setSize(800, 1000);
-		this.getFrame().setResizable(false);
+		this.getFrame().setSize(1024, 768);
 		this.getFrame().setLocationRelativeTo(null);
+		this.getFrame().setResizable(false);
 		
 		this.getFrame().setLayout(new BorderLayout());
 		
 		JScrollPane panelTextArea = new JScrollPane(this.getTextArea(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
 		
-		this.getTextArea().setEditable(false);
-		this.getTextArea().setBackground(Color.white);
-		
-		this.getFrame().getContentPane().add(panelTextArea, BorderLayout.NORTH);
+		this.getTextArea().setEditable(false);	
+				
+		this.getFrame().getContentPane().add(panelTextArea, BorderLayout.WEST);
 		
 		JEditorPane panelGoogleMap = new JEditorPane();
 		
@@ -61,9 +58,8 @@ public class AWTChatGui implements ChatGui {
 	
 	public void notifyParticipantsChanged(String[] names) {
 		//Ver que pasa con este metodo
-		/*if (participantsFrame != null) {
-			participantsFrame.refresh(names);
-		}*/
+		/*if (participantsFrame != null) 
+			participantsFrame.refresh(names);*/
 	}
 	
 	public void notifySpoken(String speaker, String sentence) {

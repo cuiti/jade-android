@@ -46,7 +46,7 @@ import chat.client.ChatGui;
 import chat.client.MIDPChatGui;
 #MIDP_INCLUDE_END*/
 //#MIDP_EXCLUDE_BEGIN
-import chat.client.AWTChatGui;
+import chat.client.ControlPanelGUI;
 //#MIDP_EXCLUDE_END
 import chat.ontology.ChatOntology;
 
@@ -94,7 +94,7 @@ public class ChatClientAgent extends Agent {
 
 		// Activate the GUI
 		//#MIDP_EXCLUDE_BEGIN
-		myGui = new AWTChatGui(this);
+		myGui = new ControlPanelGUI(this);
 		//#MIDP_EXCLUDE_END
 
 		/*#MIDP_INCLUDE_BEGIN
