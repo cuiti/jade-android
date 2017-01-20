@@ -22,7 +22,7 @@ public class ControlPanelGUI implements ChatGui {
 	public ControlPanelGUI(ChatClientAgent chatClientAgent){
     	this.setChatClientAgent(chatClientAgent);
     	this.setFrame(new JFrame("Panel de Conexiones"));
-    	this.setTextArea(new JTextArea(30,30));
+    	this.setTextArea(new JTextArea(30,40));
     	this.setBrowser(new Browser());
     	this.setBrowserView(new BrowserView(this.getBrowser()));
     	this.initialize();
@@ -31,7 +31,7 @@ public class ControlPanelGUI implements ChatGui {
 	private void initialize() {
 		this.getFrame().setSize(1024, 768);
 		this.getFrame().setLocationRelativeTo(null);
-		this.getFrame().setResizable(false);
+		this.getFrame().setResizable(true);
 		
 		this.getFrame().setLayout(new BorderLayout());
 		
@@ -90,6 +90,7 @@ public class ControlPanelGUI implements ChatGui {
 						+longitude+");\n" +
 			               "var marker = new google.maps.Marker({\n" +
 			               "    position: myLatlng,\n" +
+			               " animation: google.maps.Animation.BOUNCE," +
 			               "    map: map,\n" +
 			               "    title: 'Hola agente!'\n" +
 			               "});";
