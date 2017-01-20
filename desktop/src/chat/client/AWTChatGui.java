@@ -1,107 +1,80 @@
 package chat.client;
 
-import java.awt.*;
-import java.awt.event.*;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.net.URL;
 
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.WindowConstants;
-
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 import chat.client.agent.ChatClientAgent;
 
-public class AWTChatGui extends Frame implements ChatGui {
-	private ChatClientAgent myAgent;
-	private TextField writeTf;
-	private TextArea allTa;
-	private ParticipantsFrame participantsFrame;
-	final Browser browser = new Browser();
-    BrowserView browserView = new BrowserView(browser);
+public class AWTChatGui implements ChatGui {
+	private ChatClientAgent chatClientAgent;
+	private JFrame frame;
+	private JTextArea textArea;
+	private Browser browser;
+	private BrowserView browserView;    
+
+	public AWTChatGui(ChatClientAgent chatClientAgent){
+    	this.setChatClientAgent(chatClientAgent);
+    	this.setFrame(new JFrame("Panel de Conexiones"));
+    	this.setTextArea(new JTextArea(30,10));
+    	this.setBrowser(new Browser());
+    	this.setBrowserView(new BrowserView(this.getBrowser()));
+    	this.initialize();
+    }
 	
-	public AWTChatGui(ChatClientAgent a) {
-		myAgent = a;
+	private void initialize() {
+		this.getFrame().setSize(800, 1000);
+		this.getFrame().setResizable(false);
+		this.getFrame().setLocationRelativeTo(null);
 		
-		setTitle("Chat: "+myAgent.getLocalName());
-		setSize(getProperSize(256, 320));
-		Panel p = new Panel();
-		p.setLayout(new BorderLayout());
-		writeTf = new TextField();
-		p.add(writeTf, BorderLayout.CENTER);
-		Button b = new Button("Send");
-		b.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-		  	String s = writeTf.getText();
-		  	if (s != null && !s.equals("")) {
-			  	myAgent.handleSpoken(s);
-			  	writeTf.setText("");
-		  	}
-			} 
-		} );
-		p.add(b, BorderLayout.EAST);
-		add(p, BorderLayout.NORTH);
+		this.getFrame().setLayout(new BorderLayout());
 		
-		allTa = new TextArea();
-		allTa.setEditable(false);
-		allTa.setBackground(Color.white);
-		add(allTa, BorderLayout.CENTER);
+		JScrollPane panelTextArea = new JScrollPane(this.getTextArea(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
 		
-		b = new Button("Participants");
-		b.setBackground(Color.CYAN);
-		b.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!participantsFrame.isVisible()) {
-					participantsFrame.setVisible(true);
-				}	
-			} 
-		} );
-		add(b, BorderLayout.SOUTH);
+		this.getTextArea().setEditable(false);
+		this.getTextArea().setBackground(Color.white);
 		
-		participantsFrame = new ParticipantsFrame(this, myAgent.getLocalName());
+		this.getFrame().getContentPane().add(panelTextArea, BorderLayout.NORTH);
 		
-		addWindowListener(new	WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				myAgent.doDelete();
-			}
-		} );
+		JEditorPane panelGoogleMap = new JEditorPane();
 		
-	    JFrame mapFrame = new JFrame("Mapa de agentes JADE");
-	    
-	    mapFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-	    mapFrame.add(browserView, BorderLayout.CENTER);
-	    mapFrame.setSize(900, 500);
-	    mapFrame.setLocationRelativeTo(null);
-	    mapFrame.setVisible(true);
-	    
-	    URL url = this.getClass().getResource("/chat/client/map.html");
-	    browser.loadURL(url.toString());
-	    
-		show();
+		panelGoogleMap.setLayout(new BorderLayout());
+		
+		panelGoogleMap.add(this.getBrowserView(), BorderLayout.CENTER);
+				    
+		this.getFrame().getContentPane().add(panelGoogleMap);
+		
+		this.getFrame().setVisible(true);
+		
+		URL url = this.getClass().getResource("/chat/client/map.html");
+		this.getBrowser().loadURL(url.toString());
+		
 	}
 	
 	public void notifyParticipantsChanged(String[] names) {
-		if (participantsFrame != null) {
+		//Ver que pasa con este metodo
+		/*if (participantsFrame != null) {
 			participantsFrame.refresh(names);
-		}
+		}*/
 	}
 	
 	public void notifySpoken(String speaker, String sentence) {
-		allTa.append(speaker+": "+sentence+"\n");
-		
-		showCoordinatesOnMap(sentence);
-	}
-	
-	Dimension getProperSize(int maxX, int maxY) {
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (screenSize.width < maxX ? screenSize.width : maxX);
-		int y = (screenSize.height < maxY ? screenSize.height : maxY);
-		return new Dimension(x, y);
+		this.getTextArea().append(speaker+": "+sentence+"\n");		
+		this.showCoordinatesOnMap(sentence);
 	}
 	
 	public void dispose() {
-		participantsFrame.dispose();
-		super.dispose();
+		//Ver que pasa con este metodo
+		//participantsFrame.dispose();
+		//super.dispose();
 	}
 	
 	private void showCoordinatesOnMap(String sentence){
@@ -125,10 +98,50 @@ public class AWTChatGui extends Frame implements ChatGui {
 			               "    title: 'Hola agente!'\n" +
 			               "});";
 				
-				browser.executeJavaScript(javascriptMap);
+				this.getBrowser().executeJavaScript(javascriptMap);
 			}
 			System.out.println(javascriptMap);
 		}
+	}
+
+	public ChatClientAgent getChatClientAgent() {
+		return chatClientAgent;
+	}
+
+	private void setChatClientAgent(ChatClientAgent chatClientAgent) {
+		this.chatClientAgent = chatClientAgent;
+	}
+	
+	public JFrame getFrame() {
+		return frame;
+	}
+
+	private void setFrame(JFrame frame) {
+		this.frame = frame;
+	}
+	
+	public JTextArea getTextArea() {
+		return textArea;
+	}
+
+	private void setTextArea(JTextArea textArea) {
+		this.textArea = textArea;
+	}
+
+	public Browser getBrowser() {
+		return browser;
+	}
+
+	private void setBrowser(Browser browser) {
+		this.browser = browser;
+	}
+	
+	public BrowserView getBrowserView() {
+		return browserView;
+	}
+
+	private void setBrowserView(BrowserView browserView) {
+		this.browserView = browserView;
 	}
 }
 
