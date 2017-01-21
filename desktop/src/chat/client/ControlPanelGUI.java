@@ -5,8 +5,11 @@ import java.awt.BorderLayout;
 import java.net.URL;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.DefaultCaret;
+
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
@@ -22,7 +25,7 @@ public class ControlPanelGUI implements ChatGui {
 	public ControlPanelGUI(ChatClientAgent chatClientAgent){
     	this.setChatClientAgent(chatClientAgent);
     	this.setFrame(new JFrame("Panel de Conexiones"));
-    	this.setTextArea(new JTextArea(30,40));
+    	this.setTextArea(new JTextArea(40,40));
     	this.setBrowser(new Browser());
     	this.setBrowserView(new BrowserView(this.getBrowser()));
     	this.initialize();
@@ -31,23 +34,30 @@ public class ControlPanelGUI implements ChatGui {
 	private void initialize() {
 		this.getFrame().setSize(1024, 768);
 		this.getFrame().setLocationRelativeTo(null);
-		this.getFrame().setResizable(true);
-		
+		this.getFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
+		this.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				
 		this.getFrame().setLayout(new BorderLayout());
 		
-		JScrollPane panelTextArea = new JScrollPane(this.getTextArea(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+		JPanel panelText = new JPanel();
+		
+		JScrollPane scrollPane = new JScrollPane(this.getTextArea(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
 		
 		this.getTextArea().setEditable(false);	
 				
-		this.getFrame().getContentPane().add(panelTextArea, BorderLayout.WEST);
+		((DefaultCaret)this.getTextArea().getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+				
+		panelText.add(scrollPane);
 		
-		JEditorPane panelGoogleMap = new JEditorPane();
+		this.getFrame().getContentPane().add(panelText, BorderLayout.WEST);
 		
-		panelGoogleMap.setLayout(new BorderLayout());
+		JEditorPane editorPane = new JEditorPane();
 		
-		panelGoogleMap.add(this.getBrowserView(), BorderLayout.CENTER);
+		editorPane.setLayout(new BorderLayout());
+				
+		editorPane.add(this.getBrowserView(), BorderLayout.CENTER);
 				    
-		this.getFrame().getContentPane().add(panelGoogleMap);
+		this.getFrame().getContentPane().add(editorPane);
 		
 		this.getFrame().setVisible(true);
 		
