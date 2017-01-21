@@ -14,6 +14,8 @@ import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
 import chat.client.agent.ChatClientAgent;
+import javax.swing.JLabel;
+import java.awt.Font;
 
 public class ControlPanelGUI implements ChatGui {
 	private ChatClientAgent chatClientAgent;
@@ -37,11 +39,16 @@ public class ControlPanelGUI implements ChatGui {
 		this.getFrame().setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				
-		this.getFrame().setLayout(new BorderLayout());
+		this.getFrame().getContentPane().setLayout(new BorderLayout());
 		
 		JPanel panelText = new JPanel();
 		
 		JScrollPane scrollPane = new JScrollPane(this.getTextArea(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
+		
+		JLabel labelTextArea = new JLabel("Estado de Conexiones");
+		labelTextArea.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		labelTextArea.setHorizontalAlignment(JLabel.CENTER);
+		scrollPane.setColumnHeaderView(labelTextArea);
 		
 		this.getTextArea().setEditable(false);	
 				
@@ -51,13 +58,27 @@ public class ControlPanelGUI implements ChatGui {
 		
 		this.getFrame().getContentPane().add(panelText, BorderLayout.WEST);
 		
+		JPanel panelMap = new JPanel();
+		
+		panelMap.setLayout(new BorderLayout());
+		
 		JEditorPane editorPane = new JEditorPane();
+		
+		JLabel labelMap = new JLabel("Mapa de Conexiones");
+		labelMap.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		labelMap.setHorizontalAlignment(JLabel.CENTER);
+		
+		panelMap.add(labelMap, BorderLayout.NORTH);
 		
 		editorPane.setLayout(new BorderLayout());
 				
-		editorPane.add(this.getBrowserView(), BorderLayout.CENTER);
-				    
-		this.getFrame().getContentPane().add(editorPane);
+		editorPane.add(this.getBrowserView(), BorderLayout.CENTER);;
+		
+		panelMap.add(editorPane);
+		
+		this.getFrame().getContentPane().add(panelMap);
+		
+		
 		
 		this.getFrame().setVisible(true);
 		
