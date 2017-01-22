@@ -1,7 +1,11 @@
-package chat.client.agent;
+package bolinocuitino.agentemovil.agent;
 
 import java.util.List;
 import java.util.logging.Level;
+
+import bolinocuitino.agentemovil.ontologia.Joined;
+import bolinocuitino.agentemovil.ontologia.OntologiaPrincipal;
+import bolinocuitino.agentemovil.ontologia.Left;
 
 import jade.content.ContentManager;
 import jade.content.Predicate;
@@ -18,26 +22,10 @@ import jade.util.Logger;
 import jade.util.leap.Iterator;
 import jade.util.leap.Set;
 import jade.util.leap.SortedSetImpl;
-import chat.ontology.ChatOntology;
-import chat.ontology.Joined;
-import chat.ontology.Left;
 import android.content.Intent;
 import android.content.Context;
 
-/**
- * This agent implements the logic of the chat client running on the user
- * terminal. User interactions are handled by the ChatGui in a
- * terminal-dependent way. The ChatClientAgent performs 3 types of behaviours: -
- * AdministradorDeSuscripcion. A CyclicBehaviour that keeps the list of participants up
- * to date on the basis of the information received from the ChatManagerAgent.
- * This behaviour is also in charge of subscribing as a participant to the
- * ChatManagerAgent. - ChatListener. A CyclicBehaviour that handles messages
- * from other chat participants. - ChatSpeaker. A OneShotBehaviour that sends a
- * message conveying a sentence written by the user to other chat participants.
- * 
- * @author Giovanni Caire - TILAB
- */
-public class ChatClientAgent extends Agent implements ChatClientInterface {
+public class AgenteMovil extends Agent implements IAgenteMovil {
 	private static final long serialVersionUID = 1594371294421614291L;
 
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
@@ -47,7 +35,8 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 
 	private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
-	private Ontology onto = ChatOntology.getInstance();
+	private Ontology onto = OntologiaPrincipal.getInstance();
+	//private Ontology onto = ChatOntology.getInstance();
 	private ACLMessage spokenMsg;
 
 	private Context context;
@@ -75,7 +64,7 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 		spokenMsg.setConversationId(CHAT_ID);
 
 		// Activate the GUI
-		registerO2AInterface(ChatClientInterface.class, this);
+		registerO2AInterface(IAgenteMovil.class, this);
 		
 		Intent broadcast = new Intent();
 		broadcast.setAction("jade.demo.chat.SHOW_CHAT");
@@ -176,7 +165,7 @@ public class ChatClientAgent extends Agent implements ChatClientInterface {
 				block();
 			}
 		}
-	} 
+	}
 
 	/**
 	 * Inner class ChatListener. This behaviour registers as a chat participant

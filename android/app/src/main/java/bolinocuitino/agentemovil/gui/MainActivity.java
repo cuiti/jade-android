@@ -1,8 +1,8 @@
-package chat.client.gui;
+package bolinocuitino.agentemovil.gui;
 
 import java.util.logging.Level;
 
-import chat.client.agent.ChatClientAgent;
+import bolinocuitino.agentemovil.agent.AgenteMovil;
 import jade.android.AndroidHelper;
 import jade.android.MicroRuntimeService;
 import jade.android.MicroRuntimeServiceBinder;
@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
 	private MyReceiver myReceiver;
 	private MyHandler myHandler;
 
-	private TextView infoTextView;
+	private TextView informacionTextView;
 	private EditText campoDireccionIP;
 	private EditText campoNumeroPuerto;
 
@@ -73,8 +73,8 @@ public class MainActivity extends Activity {
 		Button button = (Button) findViewById(R.id.button_chat);
 		button.setOnClickListener(buttonChatListener);
 
-		infoTextView = (TextView) findViewById(R.id.infoTextView);
-		infoTextView.setText("");	//este texto es el que se usa para avisar cuando se está conectando
+		informacionTextView = (TextView) findViewById(R.id.infoTextView);
+		informacionTextView.setText("");	//este texto es el que se usa para avisar cuando se está conectando
 
 		//carga de las preferencias almacenadas
 		SharedPreferences settings = getSharedPreferences("jadePreferencesFile",0);
@@ -113,12 +113,12 @@ public class MainActivity extends Activity {
 			try {
 				String host = settings.getString("defaultHost", "");
 				String port = settings.getString("defaultPort", "");
-				infoTextView.setText(getString(R.string.msg_connecting_to)
+				informacionTextView.setText(getString(R.string.msg_connecting_to)
 						+ " " + host + ":" + port + "...");
 				startChat(nombreDispositivo, host, port, agentStartupCallback);
 			} catch (Exception ex) {
 				logger.log(Level.SEVERE, "excepcion al inicializar el agente!");
-				infoTextView.setText(getString(R.string.msg_unexpected));
+				informacionTextView.setText(getString(R.string.msg_unexpected));
 			}
 		}
 	};
@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
 		if (requestCode == CHAT_REQUEST) {
 			if (resultCode == RESULT_CANCELED) {
 				// The chat activity was closed.
-				infoTextView.setText("");
+				informacionTextView.setText("");
 				logger.log(Level.INFO, "Stopping Jade...");
 				microRuntimeServiceBinder
 						.stopAgentContainer(new RuntimeCallback<Void>() {
@@ -139,7 +139,7 @@ public class MainActivity extends Activity {
 							@Override
 							public void onFailure(Throwable throwable) {
 								logger.log(Level.SEVERE, "Failed to stop the "
-										+ ChatClientAgent.class.getName()
+										+ AgenteMovil.class.getName()
 										+ "...");
 								agentStartupCallback.onFailure(throwable);
 							}
@@ -183,7 +183,7 @@ public class MainActivity extends Activity {
 			}
 			if (action.equalsIgnoreCase("jade.demo.chat.SHOW_CHAT")) {
 				Intent showChat = new Intent(MainActivity.this,
-						ChatActivity.class);
+						ComunicacionActivity.class);
 				showChat.putExtra("nombreDispositivo", nombreDispositivo);
 				MainActivity.this
 						.startActivityForResult(showChat, CHAT_REQUEST);
@@ -196,7 +196,7 @@ public class MainActivity extends Activity {
 		public void handleMessage(Message msg) {
 			Bundle bundle = msg.getData();
 			if (bundle.containsKey("error")) {
-				infoTextView.setText("");
+				informacionTextView.setText("");
 				String message = bundle.getString("error");
 				ShowDialog(message);
 			}
@@ -282,13 +282,13 @@ public class MainActivity extends Activity {
 	private void startAgent(final String nombreDispositivo,
 			final RuntimeCallback<AgentController> agentStartupCallback) {
 		microRuntimeServiceBinder.startAgent(nombreDispositivo,
-				ChatClientAgent.class.getName(),
+				AgenteMovil.class.getName(),
 				new Object[] { getApplicationContext() },
 				new RuntimeCallback<Void>() {
 					@Override
 					public void onSuccess(Void thisIsNull) {
 						logger.log(Level.INFO, "Successfully start of the "
-								+ ChatClientAgent.class.getName() + "...");
+								+ AgenteMovil.class.getName() + "...");
 						try {
 							agentStartupCallback.onSuccess(MicroRuntime
 									.getAgent(nombreDispositivo));
@@ -301,7 +301,7 @@ public class MainActivity extends Activity {
 					@Override
 					public void onFailure(Throwable throwable) {
 						logger.log(Level.SEVERE, "Failed to start the "
-								+ ChatClientAgent.class.getName() + "...");
+								+ AgenteMovil.class.getName() + "...");
 						agentStartupCallback.onFailure(throwable);
 					}
 				});

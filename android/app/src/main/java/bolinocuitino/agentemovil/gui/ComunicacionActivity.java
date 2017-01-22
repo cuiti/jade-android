@@ -1,8 +1,9 @@
-package chat.client.gui;
+package bolinocuitino.agentemovil.gui;
 
 import java.util.Date;
 import java.util.logging.Level;
 
+import bolinocuitino.agentemovil.agent.IAgenteMovil;
 import jade.core.MicroRuntime;
 import jade.util.Logger;
 import jade.wrapper.ControllerException;
@@ -29,15 +30,13 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import chat.client.agent.ChatClientInterface;
-
-public class ChatActivity extends Activity {
+public class ComunicacionActivity extends Activity {
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
 
 	private MyReceiver myReceiver;
 
 	private String nombreDispositivo;
-	private ChatClientInterface chatClientInterface;
+	private IAgenteMovil interfazAgente;
 	private String DISPOSITIVO_MARCA_MODELO = Build.BRAND + " " + Build.DEVICE;
 
 
@@ -51,8 +50,8 @@ public class ChatActivity extends Activity {
 		}
 
 		try {
-			chatClientInterface = MicroRuntime.getAgent(nombreDispositivo)
-					.getO2AInterface(ChatClientInterface.class);
+			interfazAgente = MicroRuntime.getAgent(nombreDispositivo)
+					.getO2AInterface(IAgenteMovil.class);
 		} catch (StaleProxyException e) {
 			showAlertDialog(getString(R.string.msg_interface_exc), true);
 		} catch (ControllerException e) {
@@ -89,7 +88,7 @@ public class ChatActivity extends Activity {
 
 	protected void onStop() {
 		super.onStop();
-		chatClientInterface.handleSpoken("---------------------------------------------- \n" +
+		interfazAgente.handleSpoken("---------------------------------------------- \n" +
 							"El dispositivo " + DISPOSITIVO_MARCA_MODELO + " ha salido del sistema \n" +
 							"-----------------------------------------------");
 	}
@@ -108,48 +107,6 @@ public class ChatActivity extends Activity {
 			finish();
 		}
 	};
-
-
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.chat_menu, menu);
-		return true;
-	}*/
-
-	/*@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.menu_participants:
-				Intent showParticipants = new Intent(ChatActivity.this,
-						ParticipantsActivity.class);
-				showParticipants.putExtra("nombreDispositivo", nombreDispositivo);
-				startActivityForResult(showParticipants, PARTICIPANTS_REQUEST);
-				return true;
-			case R.id.menu_clear:
-
-			//Intent broadcast = new Intent();
-			//broadcast.setAction("jade.demo.chat.CLEAR_CHAT");
-			//logger.info("Sending broadcast " + broadcast.getAction());
-			//sendBroadcast(broadcast);
-
-				final TextView chatField = (TextView) findViewById(R.id.chatTextView);
-				chatField.setText("");
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}*/
-
-	/*@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == PARTICIPANTS_REQUEST) {
-			if (resultCode == RESULT_OK) {
-				// TODO: A partecipant was picked. Send a private message.
-			}
-		}
-	}*/
-
 
 	private class MyReceiver extends BroadcastReceiver {
 
@@ -192,7 +149,7 @@ public class ChatActivity extends Activity {
 
 	private void showAlertDialog(String message, final boolean fatal) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(
-				ChatActivity.this);
+				ComunicacionActivity.this);
 		builder.setMessage(message)
 				.setCancelable(false)
 				.setPositiveButton("Ok",
@@ -236,13 +193,13 @@ public class ChatActivity extends Activity {
 					+ ubicacionInfo + " \n"
 					+ " -------------------------------------";
 
-			chatClientInterface.handleSpoken(mensaje);
+			interfazAgente.handleSpoken(mensaje);
 
 			//envia las coordenadas por separado para mostrarlas en el mapa
 			if (geolocalizacion != null) { //location puede ser null cuando el usuario dehabilita la geolocalizacion
 				String latitude = String.valueOf(geolocalizacion.getLatitude());
 				String longitude = String.valueOf(geolocalizacion.getLongitude());
-				chatClientInterface.handleSpoken(latitude + "#" + longitude);
+				interfazAgente.handleSpoken(latitude + "#" + longitude);
 			}
 
 		} catch (O2AException e) {
