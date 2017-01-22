@@ -17,7 +17,7 @@ import chat.client.agent.ChatClientAgent;
 import javax.swing.JLabel;
 import java.awt.Font;
 
-public class ControlPanelGUI implements ChatGui {
+public class ControlPanelGUI {
 	private ChatClientAgent chatClientAgent;
 	private JFrame frame;
 	private JTextArea textArea;

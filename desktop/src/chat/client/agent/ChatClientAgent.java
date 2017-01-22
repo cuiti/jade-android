@@ -41,7 +41,6 @@ import jade.util.Logger;
 import jade.util.leap.Iterator;
 import jade.util.leap.Set;
 import jade.util.leap.SortedSetImpl;
-import chat.client.ChatGui;
 /*#MIDP_INCLUDE_BEGIN
 import chat.client.MIDPChatGui;
 #MIDP_INCLUDE_END*/
@@ -71,7 +70,7 @@ public class ChatClientAgent extends Agent {
 	private static final String CHAT_ID = "__chat__";
 	private static final String CHAT_MANAGER_NAME = "manager";
 
-	private ChatGui myGui;
+	private ControlPanelGUI controlPanelGUI;
 	private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
 	private Ontology onto = ChatOntology.getInstance();
@@ -94,7 +93,7 @@ public class ChatClientAgent extends Agent {
 
 		// Activate the GUI
 		//#MIDP_EXCLUDE_BEGIN
-		myGui = new ControlPanelGUI(this);
+		controlPanelGUI = new ControlPanelGUI(this);
 		//#MIDP_EXCLUDE_END
 
 		/*#MIDP_INCLUDE_BEGIN
@@ -103,17 +102,17 @@ public class ChatClientAgent extends Agent {
 	}
 
 	protected void takeDown() {
-		if (myGui != null) {
-			myGui.dispose();
+		if (controlPanelGUI != null) {
+			controlPanelGUI.dispose();
 		}
 	}
 
 	private void notifyParticipantsChanged() {
-		myGui.notifyParticipantsChanged(getParticipantNames());
+		controlPanelGUI.notifyParticipantsChanged(getParticipantNames());
 	}
 
 	private void notifySpoken(String speaker, String sentence) {
-		myGui.notifySpoken(speaker, sentence);
+		controlPanelGUI.notifySpoken(speaker, sentence);
 	}
 	
 	/**
