@@ -156,7 +156,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void onFailure(Throwable throwable) {
 			logger.log(Level.INFO, "Nickname already in use!");
-			myHandler.postError(getString(R.string.msg_nickname_in_use));
+			myHandler.postError("Nickname already in use!");
 		}
 	};
 

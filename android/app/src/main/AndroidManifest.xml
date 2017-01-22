@@ -24,7 +24,7 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="bolinocuitino.agentemovil.gui.ComunicacionActivity"
-			android:label="@string/app_title_chat">
+			android:label="@string/app_title_comunicacion">
 		</activity>
 	</application>
 </manifest>
