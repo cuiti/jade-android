@@ -1,4 +1,4 @@
-package chat.client.gui;
+package bolinocuitino.agentemovil.gui;
 
 import java.util.logging.Level;
 
@@ -6,7 +6,7 @@ import jade.util.Logger;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-public class ChatApplication extends Application {
+public class EstadoInicialAplicacion extends Application {
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
 
 	@Override
