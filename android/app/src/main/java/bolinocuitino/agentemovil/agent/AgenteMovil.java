@@ -1,5 +1,7 @@
 package bolinocuitino.agentemovil.agent;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -18,6 +20,7 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 import jade.util.Logger;
 import jade.util.leap.Iterator;
 import jade.util.leap.Set;
@@ -82,10 +85,14 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 		context.sendBroadcast(broadcast);
 	}
 
-	private void notifySpoken(String speaker, String sentence) {
+	private void notifySpoken(String speaker, Serializable datos) {
 		Intent broadcast = new Intent();
+
+		MensajeConInformacion m = (MensajeConInformacion)datos;
+		String mensajeEnElObjeto = m.getMensaje();
+
 		broadcast.setAction("jade.demo.chat.REFRESH_CHAT");
-		broadcast.putExtra("sentence", speaker + ": " + sentence + "\n");
+		broadcast.putExtra("sentence", speaker + ": " + mensajeEnElObjeto + "\n");
 		logger.log(Level.INFO, "Sending broadcast " + broadcast.getAction());
 		context.sendBroadcast(broadcast);
 	}
@@ -98,7 +105,6 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 	 * por eso sirve para quedar escuchando al manager y que vaya llegando la nueva info
 	 */
 	class AdministradorDeSuscripcion extends CyclicBehaviour {
-		private static final long serialVersionUID = -4845730529175649756L;
 		private MessageTemplate template;
 
 		AdministradorDeSuscripcion(Agent a) {
@@ -172,7 +178,7 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 	 * and keeps the list of participants up to date by managing the information
 	 * received from the ChatManager agent.
 	 */
-	class ChatListener extends CyclicBehaviour {
+	private class ChatListener extends CyclicBehaviour {
 		private static final long serialVersionUID = 741233963737842521L;
 		private MessageTemplate template = MessageTemplate
 				.MatchConversationId(CHAT_ID);
@@ -196,41 +202,47 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 		}
 	} // END of inner class ChatListener
 
-	/**
-	 * Inner class ChatSpeaker. INFORMs other participants about a spoken
-	 * sentence
-	 */
-	private class ChatSpeaker extends OneShotBehaviour {
-		private static final long serialVersionUID = -1426033904935339194L;
-		private String sentence;
-
-		private ChatSpeaker(Agent a, String s) {
+	private class EnvioDeInformacion extends OneShotBehaviour {
+		private Serializable datos;
+		private EnvioDeInformacion(Agent a, Serializable s) {
 			super(a);
-			sentence = s;
+			datos = s;
 		}
 
 		public void action() {
+
 			spokenMsg.clearAllReceiver();
 			Iterator it = participants.iterator();
 			while (it.hasNext()) {
-				spokenMsg.addReceiver((AID) it.next());
+				spokenMsg.addReceiver((AID) it.next());}
+
+
+			try {
+				spokenMsg.setContentObject(datos);  //aca setea el objeto con los datos
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			spokenMsg.setContent(sentence);
-			notifySpoken(myAgent.getLocalName(), sentence);
+			notifySpoken(myAgent.getLocalName(), datos);
+
+			try {
+				System.out.println("######## MENSAJE ENVIADO: "+((MensajeConInformacion)spokenMsg.getContentObject()).getMensaje());
+			} catch (UnreadableException e) {
+				e.printStackTrace();
+			}
+
 			send(spokenMsg);
 		}
-	} // END of inner class ChatSpeaker
+	}
 
 	// ///////////////////////////////////////
 	// Methods called by the interface
 	// ///////////////////////////////////////
-	public void handleSpoken(String s) {
-		// Add a ChatSpeaker behaviour that INFORMs all participants about
-		// the spoken sentence
-		addBehaviour(new ChatSpeaker(this, s));
+	public void handleSpoken(Serializable s) {
+		// usa el behaviour EnvioDeInformacion para enviar la info a todos los otros dispositivos
+		addBehaviour(new EnvioDeInformacion(this, s));
 	}
 	
-	public String[] getParticipantNames() {
+	/*public String[] getParticipantNames() {
 		String[] pp = new String[participants.size()];
 		Iterator it = participants.iterator();
 		int i = 0;
@@ -239,7 +251,7 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 			pp[i++] = id.getLocalName();
 		}
 		return pp;
-	}
+	}*/
 
 	// ///////////////////////////////////////
 	// Private utility method

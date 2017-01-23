@@ -1,6 +1,8 @@
 package bolinocuitino.agentemovil.agent;
 
+import java.io.Serializable;
+
 public interface IAgenteMovil {
-	void handleSpoken(String s);
-	String[] getParticipantNames();
+	void handleSpoken(Serializable s);
+	//String[] getParticipantNames();
 }

@@ -16,6 +16,7 @@ import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 import chat.client.agent.ChatClientAgent;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.io.Serializable;
 
 public class ControlPanelGUI {
 	private ChatClientAgent chatClientAgent;
@@ -93,9 +94,11 @@ public class ControlPanelGUI {
 			participantsFrame.refresh(names);*/
 	}
 	
-	public void notifySpoken(String speaker, String sentence) {
+	public void notifySpoken(String speaker, Serializable sentence) {
+		//MensajeConInformacion m = (MensajeConInformacion)sentence;
+		
 		this.getTextArea().append(speaker+": "+sentence+"\n");		
-		this.showCoordinatesOnMap(sentence);
+		//this.showCoordinatesOnMap(sentence);
 	}
 	
 	public void dispose() {

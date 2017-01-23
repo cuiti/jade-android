@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.logging.Level;
 
 import bolinocuitino.agentemovil.agent.IAgenteMovil;
+import bolinocuitino.agentemovil.agent.MensajeConInformacion;
 import jade.core.MicroRuntime;
 import jade.util.Logger;
 import jade.wrapper.ControllerException;
@@ -23,6 +24,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -88,9 +90,9 @@ public class ComunicacionActivity extends Activity {
 
 	protected void onStop() {
 		super.onStop();
-		interfazAgente.handleSpoken("---------------------------------------------- \n" +
+		/*interfazAgente.handleSpoken("---------------------------------------------- \n" +
 							"El dispositivo " + DISPOSITIVO_MARCA_MODELO + " ha salido del sistema \n" +
-							"-----------------------------------------------");
+							"-----------------------------------------------");*/
 	}
 
 	private OnClickListener botonEnviarListener = new OnClickListener() {
@@ -171,6 +173,10 @@ public class ComunicacionActivity extends Activity {
 		String smsMsgData = getSMSdata();
 		Location geolocalizacion = getInformacionGeolocalizacion();
 
+		TelephonyManager tMgr =(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
+		String telefono = tMgr.getLine1Number();
+		if (telefono==null) telefono = "No se pudo obtener el número de teléfono";
+
 		if (geolocalizacion != null) {
 			ubicacionInfo += "Latitud: " + geolocalizacion.getLatitude() + " \n"
 					+ "Longitud: " + geolocalizacion.getLongitude() + " \n"
@@ -183,8 +189,9 @@ public class ComunicacionActivity extends Activity {
 		try {
 
 			mensaje += "----- " + DISPOSITIVO_MARCA_MODELO + " -----\n"
-					+ "Fecha: "+fecha.toLocaleString()
+					+ "Fecha: "+fecha.toLocaleString()+ " \n"
 					+ "ID: " + Build.ID + " \n"
+					+ "Teléfono: "+ telefono + " \n"
 					+ "Hardware name: " + Build.HARDWARE + " \n"
 					+ "SDK version: " + Build.VERSION.SDK + " \n"
 					+ "Display: " + Build.DISPLAY + " \n"
@@ -192,15 +199,18 @@ public class ComunicacionActivity extends Activity {
 					+ smsMsgData + " \n"
 					+ ubicacionInfo + " \n"
 					+ " -------------------------------------";
-
-			interfazAgente.handleSpoken(mensaje);
-
-			//envia las coordenadas por separado para mostrarlas en el mapa
+			/*//envia las coordenadas por separado para mostrarlas en el mapa
 			if (geolocalizacion != null) { //location puede ser null cuando el usuario dehabilita la geolocalizacion
 				String latitude = String.valueOf(geolocalizacion.getLatitude());
 				String longitude = String.valueOf(geolocalizacion.getLongitude());
 				interfazAgente.handleSpoken(latitude + "#" + longitude);
-			}
+			}*/
+
+			MensajeConInformacion datos = new MensajeConInformacion();
+			datos.setMensaje("holis");
+			interfazAgente.handleSpoken(datos);
+
+
 
 		} catch (O2AException e) {
 			showAlertDialog(e.getMessage(), false);
