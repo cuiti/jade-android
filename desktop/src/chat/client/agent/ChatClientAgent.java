@@ -37,14 +37,10 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 import jade.util.Logger;
 import jade.util.leap.Iterator;
 import jade.util.leap.Set;
 import jade.util.leap.SortedSetImpl;
-
-import java.io.Serializable;
-
 /*#MIDP_INCLUDE_BEGIN
 import chat.client.MIDPChatGui;
 #MIDP_INCLUDE_END*/
@@ -115,8 +111,8 @@ public class ChatClientAgent extends Agent {
 		controlPanelGUI.notifyParticipantsChanged(getParticipantNames());
 	}
 
-	private void notifySpoken(String speaker, Serializable mensaje) {
-		controlPanelGUI.notifySpoken(speaker, mensaje);
+	private void notifySpoken(String speaker, String sentence) {
+		controlPanelGUI.notifySpoken(speaker, sentence);
 	}
 	
 	/**
@@ -205,10 +201,7 @@ public class ChatClientAgent extends Agent {
 	 * received from the ChatManager agent.
 	 */
 	class ChatListener extends CyclicBehaviour {
-		private static final long serialVersionUID = 4881864151160276717L;
-		
-		// el template de ACL se usa para poner filtros, en este caso que al panel de control
-		// le lleguen los mensajes de los agentes
+		private static final long serialVersionUID = 741233963737842521L;
 		private MessageTemplate template = MessageTemplate
 				.MatchConversationId(CHAT_ID);
 
@@ -217,16 +210,11 @@ public class ChatClientAgent extends Agent {
 		}
 
 		public void action() {
-			ACLMessage msg = myAgent.receive();
+			ACLMessage msg = myAgent.receive(template);
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
-					try {
-						System.out.println("entra al action del chat listener");
-						System.out.println(msg.getContentObject().toString());
-						notifySpoken(msg.getSender().getLocalName(),msg.getContentObject());
-					} catch (UnreadableException e) {
-						e.printStackTrace();
-					}
+					notifySpoken(msg.getSender().getLocalName(),
+							msg.getContent());
 				} else {
 					handleUnexpected(msg);
 				}
