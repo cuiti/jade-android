@@ -1,11 +1,12 @@
-package bolinocuitino.agentemovil.gui;
+package chat.client.agent;
 
 import java.io.Serializable;
 import java.util.Date;
 
 public class MensajeConInformacion implements Serializable {
-
-    private String mensaje;
+	
+	private static final long serialVersionUID = -5116167114674610561L;
+	private String mensaje;
     private Date fecha;
     private String nombreHardware;
     private int SDKversionNumber;
