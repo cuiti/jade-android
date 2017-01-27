@@ -9,18 +9,7 @@ import jade.content.schema.PredicateSchema;
 import jade.content.schema.PrimitiveSchema;
 
 
-public class AppOntology extends Ontology {
-
-	private static String ONTOLOGY_NAME = "App-ontology";
-
-	private static String JOINED = "joined";
-	private static String JOINED_WHO = "who";
-
-	private static String LEFT = "left";
-	private static String LEFT_WHO = "who";
-
-	private static String SPOKEN = "spoken";
-	private static String SPOKEN_WHAT = "what";
+public class AppOntology extends Ontology implements AppVocabulary {
 
 	// singleton
 	private static Ontology appOntology = new AppOntology();
