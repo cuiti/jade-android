@@ -42,7 +42,7 @@ import jade.util.Logger;
 import jade.util.leap.Iterator;
 import jade.util.leap.Set;
 import jade.util.leap.SortedSetImpl;
-import ontologia.ChatOntology;
+import ontologia.AppOntology;
 
 import java.io.Serializable;
 
@@ -72,7 +72,7 @@ public class ChatClientAgent extends Agent {
 	private ControlPanel controlPanelGUI;
 	private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
-	private Ontology onto = ChatOntology.getInstance();
+	private Ontology onto = AppOntology.getInstance();
 	private ACLMessage spokenMsg;
 
 	protected void setup() {
@@ -151,11 +151,11 @@ public class ChatClientAgent extends Agent {
 					try {
 						AbsPredicate p = (AbsPredicate) myAgent
 							.getContentManager().extractAbsContent(msg);
-						if (p.getTypeName().equals(ChatOntology.JOINED)) {
+						if (p.getTypeName().equals(AppOntology.JOINED)) {
 							// Get new participants, add them to the list of
 							// participants and notify the gui
 							AbsAggregate agg = (AbsAggregate) p
-									.getAbsTerm(ChatOntology.JOINED_WHO);
+									.getAbsTerm(AppOntology.JOINED_WHO);
 							if (agg != null) {
 								Iterator it = agg.iterator();
 								while (it.hasNext()) {
@@ -166,11 +166,11 @@ public class ChatClientAgent extends Agent {
 							}
 							notifyParticipantsChanged();
 						}
-						if (p.getTypeName().equals(ChatOntology.LEFT)) {
+						if (p.getTypeName().equals(AppOntology.LEFT)) {
 							// Get old participants, remove them from the list
 							// of participants and notify the gui
 							AbsAggregate agg = (AbsAggregate) p
-									.getAbsTerm(ChatOntology.JOINED_WHO);
+									.getAbsTerm(AppOntology.JOINED_WHO);
 							if (agg != null) {
 								Iterator it = agg.iterator();
 								while (it.hasNext()) {

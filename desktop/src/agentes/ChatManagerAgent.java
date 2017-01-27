@@ -39,7 +39,7 @@ import jade.content.abs.*;
 
 import jade.proto.SubscriptionResponder;
 import jade.proto.SubscriptionResponder.SubscriptionManager;
-import ontologia.ChatOntology;
+import ontologia.AppOntology;
 import ontologia.Joined;
 import jade.proto.SubscriptionResponder.Subscription;
 import jade.domain.FIPAAgentManagement.RefuseException;
@@ -67,7 +67,7 @@ import ontologia.*;
 public class ChatManagerAgent extends Agent implements SubscriptionManager {
 	private Map<AID, Subscription> participants = new HashMap<AID, Subscription>();
 	private Codec codec = new SLCodec();
-	private Ontology onto = ChatOntology.getInstance();
+	private Ontology onto = AppOntology.getInstance();
 	private AMSSubscriber myAMSSubscriber;
 
 	protected void setup() {
@@ -176,10 +176,10 @@ public class ChatManagerAgent extends Agent implements SubscriptionManager {
 					ACLMessage notif = s.getMessage().createReply();
 					notif.setPerformative(ACLMessage.INFORM);
 					notif.clearAllReceiver();
-					AbsPredicate p = new AbsPredicate(ChatOntology.LEFT);
+					AbsPredicate p = new AbsPredicate(AppOntology.LEFT);
 					AbsAggregate agg = new AbsAggregate(BasicOntology.SEQUENCE);
 					agg.add((AbsTerm) BasicOntology.getInstance().fromObject(oldId));
-					p.set(ChatOntology.LEFT_WHO, agg);
+					p.set(AppOntology.LEFT_WHO, agg);
 					getContentManager().fillContent(notif, p);
 
 					Iterator it = participants.values().iterator();

@@ -26,7 +26,6 @@ package ontologia;
 
 import jade.content.onto.*;
 import jade.content.schema.*;
-import jade.content.abs.*;
 
 /**
  * Ontology containing concepts, predicates and actions used within the chat
@@ -34,19 +33,19 @@ import jade.content.abs.*;
  * 
  * @author Giovanni Caire - TILAB
  */
-public class ChatOntology extends Ontology implements ChatVocabulary {
-
+public class AppOntology extends Ontology implements AppVocabulary {
+		
 	// The singleton instance of this ontology
-	private static Ontology theInstance = new ChatOntology();
+	private static Ontology appOntology = new AppOntology();
 
 	public static Ontology getInstance() {
-		return theInstance;
+		return appOntology;
 	}
 
 	/**
 	 * Constructor
 	 */
-	private ChatOntology() {
+	private AppOntology() {
 		super(ONTOLOGY_NAME, BasicOntology.getInstance(), new CFReflectiveIntrospector());
 
 		try {

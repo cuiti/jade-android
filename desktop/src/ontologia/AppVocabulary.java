@@ -28,9 +28,9 @@ package ontologia;
    Vocabulary containing symbols used within the chat application.
    @author Giovanni Caire - TILAB
  */
-public interface ChatVocabulary {
+public interface AppVocabulary {
 	// ONTOLOGY NAME
-  public static final String ONTOLOGY_NAME = "Chat-ontology";
+  public static final String ONTOLOGY_NAME = "App-ontology";
 	
 	// VOCABULARY
   public static final String JOINED = "joined";
