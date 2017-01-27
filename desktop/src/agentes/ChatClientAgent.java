@@ -46,7 +46,7 @@ import ontologia.ChatOntology;
 
 import java.io.Serializable;
 
-import gui.ControlPanelGUI;
+import gui.ControlPanel;
 
 /**
  * This agent implements the logic of the chat client running on the user
@@ -69,7 +69,7 @@ public class ChatClientAgent extends Agent {
 	private static final String CHAT_ID = "__chat__";
 	private static final String CHAT_MANAGER_NAME = "manager";
 
-	private ControlPanelGUI controlPanelGUI;
+	private ControlPanel controlPanelGUI;
 	private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
 	private Ontology onto = ChatOntology.getInstance();
@@ -92,7 +92,7 @@ public class ChatClientAgent extends Agent {
 
 		// Activate the GUI
 		//#MIDP_EXCLUDE_BEGIN
-		controlPanelGUI = new ControlPanelGUI(this);
+		controlPanelGUI = new ControlPanel(this);
 		//#MIDP_EXCLUDE_END
 
 		/*#MIDP_INCLUDE_BEGIN

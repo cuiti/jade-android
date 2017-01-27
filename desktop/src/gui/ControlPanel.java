@@ -19,14 +19,14 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.io.Serializable;
 
-public class ControlPanelGUI {
+public class ControlPanel {
 	private ChatClientAgent chatClientAgent;
 	private JFrame frame;
 	private JTextArea textArea;
 	private Browser browser;
 	private BrowserView browserView;    
 
-	public ControlPanelGUI(ChatClientAgent chatClientAgent){
+	public ControlPanel(ChatClientAgent chatClientAgent){
     	this.setChatClientAgent(chatClientAgent);
     	this.setFrame(new JFrame("Panel de Conexiones"));
     	this.setTextArea(new JTextArea(40,40));

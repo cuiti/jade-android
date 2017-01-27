@@ -11,7 +11,7 @@ import jade.content.schema.PrimitiveSchema;
 
 public class AppOntology extends Ontology {
 
-	private static String NOMBRE_ONTOLOGIA = "Chat-ontology";
+	private static String ONTOLOGY_NAME = "Chat-ontology";
 
 	private static String JOINED = "joined";
 	private static String JOINED_WHO = "who";
@@ -31,7 +31,7 @@ public class AppOntology extends Ontology {
 
 
 	private AppOntology() {
-		super(NOMBRE_ONTOLOGIA, BasicOntology.getInstance(), new CFReflectiveIntrospector());
+		super(ONTOLOGY_NAME, BasicOntology.getInstance(), new CFReflectiveIntrospector());
 
 		try {
 			this.add(new PredicateSchema(JOINED), Joined.class);

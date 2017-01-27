@@ -5,8 +5,6 @@ import java.util.List;
 import jade.content.Predicate;
 import jade.core.AID;
 
-//#J2ME_EXCLUDE_FILE
-
 /**
  * Joined predicate used by chat ontology.
  * 
