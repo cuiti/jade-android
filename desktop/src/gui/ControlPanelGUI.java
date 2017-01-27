@@ -1,4 +1,4 @@
-package chat.client;
+package gui;
 
 
 import java.awt.BorderLayout;
@@ -13,7 +13,8 @@ import javax.swing.text.DefaultCaret;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
-import chat.client.agent.ChatClientAgent;
+import agentes.ChatClientAgent;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.io.Serializable;

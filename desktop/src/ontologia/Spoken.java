@@ -1,4 +1,4 @@
-package chat.ontology;
+package ontologia;
 
 import jade.content.Predicate;
 

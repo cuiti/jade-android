@@ -21,7 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
  *****************************************************************/
 
-package chat.manager;
+package agentes;
 
 //#J2ME_EXCLUDE_FILE
 
@@ -39,6 +39,8 @@ import jade.content.abs.*;
 
 import jade.proto.SubscriptionResponder;
 import jade.proto.SubscriptionResponder.SubscriptionManager;
+import ontologia.ChatOntology;
+import ontologia.Joined;
 import jade.proto.SubscriptionResponder.Subscription;
 import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
@@ -55,7 +57,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import chat.ontology.*;
+import ontologia.*;
 
 /**
    This agent maintains knowledge of agents currently attending the 

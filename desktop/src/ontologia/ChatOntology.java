@@ -22,7 +22,7 @@
  * Boston, MA  02111-1307, USA.
  * **************************************************************
  */
-package chat.ontology;
+package ontologia;
 
 import jade.content.onto.*;
 import jade.content.schema.*;

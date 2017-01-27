@@ -1,4 +1,4 @@
-package chat.client.agent;
+package agentes;
 
 import java.io.Serializable;
 import java.util.Date;

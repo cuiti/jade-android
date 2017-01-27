@@ -21,7 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
  *****************************************************************/
 
-package chat.client.agent;
+package agentes;
 
 import jade.content.ContentManager;
 import jade.content.abs.AbsAggregate;
@@ -42,16 +42,11 @@ import jade.util.Logger;
 import jade.util.leap.Iterator;
 import jade.util.leap.Set;
 import jade.util.leap.SortedSetImpl;
+import ontologia.ChatOntology;
 
 import java.io.Serializable;
 
-/*#MIDP_INCLUDE_BEGIN
-import chat.client.MIDPChatGui;
-#MIDP_INCLUDE_END*/
-//#MIDP_EXCLUDE_BEGIN
-import chat.client.ControlPanelGUI;
-//#MIDP_EXCLUDE_END
-import chat.ontology.ChatOntology;
+import gui.ControlPanelGUI;
 
 /**
  * This agent implements the logic of the chat client running on the user
