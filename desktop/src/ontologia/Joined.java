@@ -5,12 +5,6 @@ import java.util.List;
 import jade.content.Predicate;
 import jade.core.AID;
 
-/**
- * Joined predicate used by chat ontology.
- * 
- * @author Michele Izzo - Telecomitalia
- */
-
 @SuppressWarnings("serial")
 public class Joined implements Predicate {
 

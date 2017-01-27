@@ -26,11 +26,6 @@ package gui;
 import jade.MicroBoot;
 import jade.core.MicroRuntime;
 
-/**
-   Startup class for the chat application
-   @author Giovanni Caire - TILAB
- */
-
 public class Start extends MicroBoot {
 	
 	private static String getName(){

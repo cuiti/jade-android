@@ -2,12 +2,6 @@ package ontologia;
 
 import jade.content.Predicate;
 
-/**
- * Spoken predicate used by chat ontology.
- * 
- * @author Michele Izzo - Telecomitalia
- */
-
 @SuppressWarnings("serial")
 public class Spoken implements Predicate {
 
