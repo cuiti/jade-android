@@ -9,7 +9,7 @@ import jade.content.schema.PredicateSchema;
 import jade.content.schema.PrimitiveSchema;
 
 
-public class OntologiaPrincipal extends Ontology {
+public class AppOntology extends Ontology {
 
 	private static String NOMBRE_ONTOLOGIA = "Chat-ontology";
 
@@ -23,14 +23,14 @@ public class OntologiaPrincipal extends Ontology {
 	private static String SPOKEN_WHAT = "what";
 
 	// singleton
-	private static Ontology theInstance = new OntologiaPrincipal();
+	private static Ontology theInstance = new AppOntology();
 
 	public static Ontology getInstance() {
 		return theInstance;
 	}
 
 
-	private OntologiaPrincipal() {
+	private AppOntology() {
 		super(NOMBRE_ONTOLOGIA, BasicOntology.getInstance(), new CFReflectiveIntrospector());
 
 		try {

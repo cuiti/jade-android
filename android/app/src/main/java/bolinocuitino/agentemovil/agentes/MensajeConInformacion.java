@@ -1,4 +1,4 @@
-package bolinocuitino.agentemovil.agent;
+package bolinocuitino.agentemovil.agentes;
 
 import java.io.Serializable;
 import java.util.Date;

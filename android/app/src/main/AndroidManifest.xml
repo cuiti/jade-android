@@ -18,14 +18,14 @@
 
 		<service android:name="jade.android.MicroRuntimeService" />
 
-		<activity android:name="bolinocuitino.agentemovil.gui.MainActivity" android:label="@string/app_title_main">
+		<activity android:name="bolinocuitino.agentemovil.gui.MainActivity" android:label="@string/app_title_main" android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
 		<activity android:name="bolinocuitino.agentemovil.gui.ComunicacionActivity"
-			android:label="@string/app_title_comunicacion">
+			android:label="@string/app_title_comunicacion" android:screenOrientation="portrait">
 		</activity>
 	</application>
 </manifest>

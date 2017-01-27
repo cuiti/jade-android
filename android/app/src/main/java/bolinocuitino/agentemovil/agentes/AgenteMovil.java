@@ -1,4 +1,4 @@
-package bolinocuitino.agentemovil.agent;
+package bolinocuitino.agentemovil.agentes;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import bolinocuitino.agentemovil.ontologia.Joined;
-import bolinocuitino.agentemovil.ontologia.OntologiaPrincipal;
+import bolinocuitino.agentemovil.ontologia.AppOntology;
 import bolinocuitino.agentemovil.ontologia.Left;
 
 import jade.content.ContentManager;
@@ -38,7 +38,7 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 
 	private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
-	private Ontology onto = OntologiaPrincipal.getInstance();
+	private Ontology onto = AppOntology.getInstance();
 	//private Ontology onto = ChatOntology.getInstance();
 	private ACLMessage spokenMsg;
 

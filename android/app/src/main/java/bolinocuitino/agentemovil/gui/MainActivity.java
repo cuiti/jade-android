@@ -2,7 +2,7 @@ package bolinocuitino.agentemovil.gui;
 
 import java.util.logging.Level;
 
-import bolinocuitino.agentemovil.agent.AgenteMovil;
+import bolinocuitino.agentemovil.agentes.AgenteMovil;
 import jade.android.AndroidHelper;
 import jade.android.MicroRuntimeService;
 import jade.android.MicroRuntimeServiceBinder;

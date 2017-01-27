@@ -3,8 +3,8 @@ package bolinocuitino.agentemovil.gui;
 import java.util.Date;
 import java.util.logging.Level;
 
-import bolinocuitino.agentemovil.agent.IAgenteMovil;
-import bolinocuitino.agentemovil.agent.MensajeConInformacion;
+import bolinocuitino.agentemovil.agentes.IAgenteMovil;
+import bolinocuitino.agentemovil.agentes.MensajeConInformacion;
 import jade.core.MicroRuntime;
 import jade.util.Logger;
 import jade.wrapper.ControllerException;
