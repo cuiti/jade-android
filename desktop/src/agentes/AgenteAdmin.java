@@ -30,24 +30,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
 
-public class ChatManagerAgent extends Agent implements SubscriptionManager {
+public class AgenteAdmin extends Agent implements SubscriptionManager {
+	private static final long serialVersionUID = -2551564051681805734L;
 	private Map<AID, Subscription> participants = new HashMap<AID, Subscription>();
 	private Codec codec = new SLCodec();
-	private Ontology onto = AppOntology.getInstance();
+	private Ontology ontology = AppOntology.getInstance();
 	private AMSSubscriber myAMSSubscriber;
 
 	protected void setup() {
 		// Prepare to accept subscriptions from chat participants
 		getContentManager().registerLanguage(codec);
-		getContentManager().registerOntology(onto);
+		getContentManager().registerOntology(ontology);
 
 		MessageTemplate sTemplate = MessageTemplate.and(
 				MessageTemplate.MatchPerformative(ACLMessage.SUBSCRIBE),
 				MessageTemplate.and(
 						MessageTemplate.MatchLanguage(codec.getName()),
-						MessageTemplate.MatchOntology(onto.getName()) ) );
+						MessageTemplate.MatchOntology(ontology.getName()) ) );
 		addBehaviour(new SubscriptionResponder(this, sTemplate, this));
 
 		// Register to the AMS to detect when chat participants suddenly die
@@ -86,13 +86,13 @@ public class ChatManagerAgent extends Agent implements SubscriptionManager {
 	///////////////////////////////////////////////
 	// SubscriptionManager interface implementation
 	///////////////////////////////////////////////
-	public boolean register(Subscription s) throws RefuseException, NotUnderstoodException { 
+	public boolean register(Subscription subscription) throws RefuseException, NotUnderstoodException { 
 		try {
-			AID newId = s.getMessage().getSender();
+			AID newId = subscription.getMessage().getSender();
 			// Notify the new participant about the others (if any) and VV
 			if (!participants.isEmpty()) {
 				// The message for the new participant
-				ACLMessage notif1 = s.getMessage().createReply();
+				ACLMessage notif1 = subscription.getMessage().createReply();
 				notif1.setPerformative(ACLMessage.INFORM);
 
 				// The message for the old participants.
@@ -108,24 +108,22 @@ public class ChatManagerAgent extends Agent implements SubscriptionManager {
 				getContentManager().fillContent(notif2, joined);
 
 				who.clear();
-				Iterator<AID> it = participants.keySet().iterator();
-				while (it.hasNext()) {
-					AID oldId = it.next();
-					
+				
+				for (AID oldAid : participants.keySet()) {
 					// Notify old participant
-					Subscription oldS = (Subscription) participants.get(oldId);
+					Subscription oldS = (Subscription) participants.get(oldAid);
 					oldS.notify(notif2);
 					
-					who.add(oldId);
+					who.add(oldAid);
 				}
 
 				// Notify new participant
 				getContentManager().fillContent(notif1, joined);
-				s.notify(notif1);
+				subscription.notify(notif1);
 			}
 			
 			// Add the new subscription
-			participants.put(newId, s);
+			participants.put(newId, subscription);
 			return false;
 		}
 		catch (Exception e) {
@@ -134,14 +132,14 @@ public class ChatManagerAgent extends Agent implements SubscriptionManager {
 		}		
 	}
 
-	public boolean deregister(Subscription s) throws FailureException {
-		AID oldId = s.getMessage().getSender();
+	public boolean deregister(Subscription subscription) throws FailureException {
+		AID oldId = subscription.getMessage().getSender();
 		// Remove the subscription
 		if (participants.remove(oldId) != null) {
 			// Notify other participants if any
 			if (!participants.isEmpty()) {
 				try {
-					ACLMessage notif = s.getMessage().createReply();
+					ACLMessage notif = subscription.getMessage().createReply();
 					notif.setPerformative(ACLMessage.INFORM);
 					notif.clearAllReceiver();
 					AbsPredicate p = new AbsPredicate(AppOntology.LEFT);
@@ -150,10 +148,8 @@ public class ChatManagerAgent extends Agent implements SubscriptionManager {
 					p.set(AppOntology.LEFT_WHO, agg);
 					getContentManager().fillContent(notif, p);
 
-					Iterator it = participants.values().iterator();
-					while (it.hasNext()) {
-						Subscription s1 = (Subscription) it.next();
-						s1.notify(notif);
+					for (Subscription sub : participants.values()) {
+						sub.notify(notif);
 					}
 				}
 				catch (Exception e) {

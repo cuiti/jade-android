@@ -13,21 +13,21 @@ import javax.swing.text.DefaultCaret;
 import com.teamdev.jxbrowser.chromium.Browser;
 import com.teamdev.jxbrowser.chromium.swing.BrowserView;
 
-import agentes.ChatClientAgent;
+import agentes.AgenteDesktop;
+import ontologia.InfoMensaje;
 
 import javax.swing.JLabel;
 import java.awt.Font;
-import java.io.Serializable;
 
 public class ControlPanel {
-	private ChatClientAgent chatClientAgent;
+	private AgenteDesktop agenteDesktop;
 	private JFrame frame;
 	private JTextArea textArea;
 	private Browser browser;
 	private BrowserView browserView;    
 
-	public ControlPanel(ChatClientAgent chatClientAgent){
-    	this.setChatClientAgent(chatClientAgent);
+	public ControlPanel(AgenteDesktop agenteDesktop){
+    	this.setAgenteDesktop(agenteDesktop);
     	this.setFrame(new JFrame("Panel de Conexiones"));
     	this.setTextArea(new JTextArea(40,40));
     	this.setBrowser(new Browser());
@@ -84,64 +84,40 @@ public class ControlPanel {
 		
 		this.getFrame().setVisible(true);
 		
-		URL url = this.getClass().getResource("/chat/client/map.html");
+		URL url = this.getClass().getResource("/gui/map.html");
 		this.getBrowser().loadURL(url.toString());
 		
 	}
 	
-	public void notifyParticipantsChanged(String[] names) {
-		//Ver que pasa con este metodo
-		/*if (participantsFrame != null) 
-			participantsFrame.refresh(names);*/
+	public void notifySpoken(String speaker, InfoMensaje infoMensaje) {
+		this.getTextArea().append(speaker+": "+infoMensaje+"\n");		
+		this.showCoordinatesOnMap(infoMensaje.getLatitud(), infoMensaje.getLongitud());
 	}
 	
-	public void notifySpoken(String speaker, Serializable sentence) {
-		//MensajeConInformacion m = (MensajeConInformacion)sentence;
-		
-		this.getTextArea().append(speaker+": "+sentence+"\n");		
-		//this.showCoordinatesOnMap(sentence);
-	}
-	
-	public void dispose() {
-		//Ver que pasa con este metodo
-		//participantsFrame.dispose();
-		//super.dispose();
-	}
-	
-	private void showCoordinatesOnMap(String sentence){
-		String javascriptMap ="";
-		
-		if ((sentence.length()<40)&&(sentence.contains("#"))){ 
-			//length es la medida maxima de los dos numeros con signo y "#" como separador
-			String[] parts = sentence.split("#");
-			String latString = parts[0];
-			String lonString = parts[1];
+	private void showCoordinatesOnMap(Double latitud, Double longitud){
+		if ((latitud != null)&&(longitud!=null)){
+			String javascriptMap ="";
 			
-			Double latitude = Double.parseDouble(latString);
-			Double longitude = Double.parseDouble(lonString);
-			if ((latitude != null)&&(longitude!=null)){
-				javascriptMap += "var myLatlng = new google.maps.LatLng("
-						+latitude+","
-						+longitude+");\n" +
-			               "var marker = new google.maps.Marker({\n" +
-			               "    position: myLatlng,\n" +
-			               " animation: google.maps.Animation.BOUNCE," +
-			               "    map: map,\n" +
-			               "    title: 'Hola agente!'\n" +
-			               "});";
+			javascriptMap += "var myLatlng = new google.maps.LatLng("
+					+latitud+","
+					+longitud+");\n" +
+			        "var marker = new google.maps.Marker({\n" +
+			        "    position: myLatlng,\n" +
+			        " animation: google.maps.Animation.BOUNCE," +
+			        "    map: map,\n" +
+			        "    title: 'Hola agente!'\n" +
+			        "});";
 				
-				this.getBrowser().executeJavaScript(javascriptMap);
-			}
-			System.out.println(javascriptMap);
-		}
+			this.getBrowser().executeJavaScript(javascriptMap);
+		}			
 	}
 
-	public ChatClientAgent getChatClientAgent() {
-		return chatClientAgent;
+	public AgenteDesktop getAgenteDesktop() {
+		return agenteDesktop;
 	}
 
-	private void setChatClientAgent(ChatClientAgent chatClientAgent) {
-		this.chatClientAgent = chatClientAgent;
+	private void setAgenteDesktop(AgenteDesktop agenteDesktop) {
+		this.agenteDesktop = agenteDesktop;
 	}
 	
 	public JFrame getFrame() {

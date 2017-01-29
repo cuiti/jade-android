@@ -5,45 +5,44 @@ import jade.content.abs.AbsAggregate;
 import jade.content.abs.AbsConcept;
 import jade.content.abs.AbsPredicate;
 import jade.content.lang.Codec;
+import jade.content.lang.Codec.CodecException;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.BasicOntology;
 import jade.content.onto.Ontology;
+import jade.content.onto.OntologyException;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 import jade.util.Logger;
 import jade.util.leap.Iterator;
 import jade.util.leap.Set;
 import jade.util.leap.SortedSetImpl;
 import ontologia.AppOntology;
-
-import java.io.Serializable;
+import ontologia.InfoMensaje;
 
 import gui.ControlPanel;
 
-public class ChatClientAgent extends Agent {
+public class AgenteDesktop extends Agent {
 	private static final long serialVersionUID = 1594371294421614291L;
-
 	private Logger logger = Logger.getMyLogger(this.getClass().getName());
 
 	private static final String CHAT_ID = "__chat__";
-	private static final String CHAT_MANAGER_NAME = "manager";
+	private static final String ADMIN_NAME = "manager";
 
-	private ControlPanel controlPanelGUI;
+	private ControlPanel controlPanel;
 	private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
-	private Ontology onto = AppOntology.getInstance();
+	private Ontology ontology = AppOntology.getInstance();
 	private ACLMessage spokenMsg;
 
 	protected void setup() {
 		// Register language and ontology
 		ContentManager cm = getContentManager();
 		cm.registerLanguage(codec);
-		cm.registerOntology(onto);
+		cm.registerOntology(ontology);
 		cm.setValidationMode(false);
 
 		// Add initial behaviours
@@ -53,29 +52,19 @@ public class ChatClientAgent extends Agent {
 		// Initialize the message used to convey spoken sentences
 		spokenMsg = new ACLMessage(ACLMessage.INFORM);
 		spokenMsg.setConversationId(CHAT_ID);
-
-		// Activate the GUI
-		//#MIDP_EXCLUDE_BEGIN
-		controlPanelGUI = new ControlPanel(this);
-		//#MIDP_EXCLUDE_END
-
-		/*#MIDP_INCLUDE_BEGIN
-		myGui = new MIDPChatGui(this);
-		#MIDP_INCLUDE_END*/
+		spokenMsg.setLanguage(codec.getName());
+		spokenMsg.setOntology(ontology.getName());
+		
+		controlPanel = new ControlPanel(this);
+		
 	}
 
 	protected void takeDown() {
-		if (controlPanelGUI != null) {
-			controlPanelGUI.dispose();
-		}
+		
 	}
 
-	private void notifyParticipantsChanged() {
-		controlPanelGUI.notifyParticipantsChanged(getParticipantNames());
-	}
-
-	private void notifySpoken(String speaker, Serializable mensaje) {
-		controlPanelGUI.notifySpoken(speaker, mensaje);
+	private void notifySpoken(String speaker, InfoMensaje mensaje) {
+		controlPanel.notifySpoken(speaker, mensaje);
 	}
 	
 	/**
@@ -95,11 +84,11 @@ public class ChatClientAgent extends Agent {
 			// Subscribe as a chat participant to the ChatManager agent
 			ACLMessage subscription = new ACLMessage(ACLMessage.SUBSCRIBE);
 			subscription.setLanguage(codec.getName());
-			subscription.setOntology(onto.getName());
+			subscription.setOntology(ontology.getName());
 			String convId = "C-" + myAgent.getLocalName();
 			subscription.setConversationId(convId);
 			subscription
-					.addReceiver(new AID(CHAT_MANAGER_NAME, AID.ISLOCALNAME));
+					.addReceiver(new AID(ADMIN_NAME, AID.ISLOCALNAME));
 			myAgent.send(subscription);
 			// Initialize the template used to receive notifications
 			// from the ChatManagerAgent
@@ -128,7 +117,6 @@ public class ChatClientAgent extends Agent {
 											.getInstance().toObject(c));
 								}
 							}
-							notifyParticipantsChanged();
 						}
 						if (p.getTypeName().equals(AppOntology.LEFT)) {
 							// Get old participants, remove them from the list
@@ -143,7 +131,6 @@ public class ChatClientAgent extends Agent {
 											.getInstance().toObject(c));
 								}
 							}
-							notifyParticipantsChanged();
 						}
 					} catch (Exception e) {
 						Logger.println(e.toString());
@@ -166,11 +153,6 @@ public class ChatClientAgent extends Agent {
 	class ChatListener extends CyclicBehaviour {
 		private static final long serialVersionUID = 4881864151160276717L;
 		
-		// el template de ACL se usa para poner filtros, en este caso que al panel de control
-		// le lleguen los mensajes de los agentes
-		private MessageTemplate template = MessageTemplate
-				.MatchConversationId(CHAT_ID);
-
 		ChatListener(Agent a) {
 			super(a);
 		}
@@ -180,10 +162,10 @@ public class ChatClientAgent extends Agent {
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
 					try {
-						System.out.println("entra al action del chat listener");
-						System.out.println(msg.getContentObject().toString());
-						notifySpoken(msg.getSender().getLocalName(),msg.getContentObject());
-					} catch (UnreadableException e) {
+						ContentManager cm = myAgent.getContentManager();
+						InfoMensaje infoMensaje = (InfoMensaje) cm.extractContent(msg);
+						notifySpoken(msg.getSender().getLocalName(),infoMensaje);
+					} catch (OntologyException | CodecException e) {
 						e.printStackTrace();
 					}
 				} else {
@@ -201,11 +183,11 @@ public class ChatClientAgent extends Agent {
 	 */
 	private class ChatSpeaker extends OneShotBehaviour {
 		private static final long serialVersionUID = -1426033904935339194L;
-		private String sentence;
+		private InfoMensaje datos;
 
-		private ChatSpeaker(Agent a, String s) {
-			super(a);
-			sentence = s;
+		private ChatSpeaker(Agent agent, InfoMensaje infoMensaje) {
+			super(agent);
+			datos = infoMensaje;
 		}
 
 		public void action() {
@@ -214,8 +196,15 @@ public class ChatClientAgent extends Agent {
 			while (it.hasNext()) {
 				spokenMsg.addReceiver((AID) it.next());
 			}
-			spokenMsg.setContent(sentence);
-			notifySpoken(myAgent.getLocalName(), sentence);
+			try{
+				ContentManager cm = myAgent.getContentManager();
+				cm.fillContent(spokenMsg, datos);
+			} catch (Codec.CodecException e1) {
+				e1.printStackTrace();
+			} catch (OntologyException e2) {
+				e2.printStackTrace();
+			}
+			notifySpoken(myAgent.getLocalName(), datos);
 			send(spokenMsg);
 		}
 	} // END of inner class ChatSpeaker
@@ -223,10 +212,10 @@ public class ChatClientAgent extends Agent {
 	// ///////////////////////////////////////
 	// Methods called by the interface
 	// ///////////////////////////////////////
-	public void handleSpoken(String s) {
+	public void handleSpoken(InfoMensaje infoMensaje) {
 		// Add a ChatSpeaker behaviour that INFORMs all participants about
 		// the spoken sentence
-		addBehaviour(new ChatSpeaker(this, s));
+		addBehaviour(new ChatSpeaker(this, infoMensaje));
 	}
 	
 	public String[] getParticipantNames() {

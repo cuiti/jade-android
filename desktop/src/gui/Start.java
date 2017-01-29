@@ -35,7 +35,7 @@ public class Start extends MicroBoot {
 	public static void main(String args[]) {
 		MicroBoot.main(args);
 		try {
-			MicroRuntime.startAgent(Start.getName(), "chat.client.agent.ChatClientAgent", null);
+			MicroRuntime.startAgent(Start.getName(), "agentes.AgenteDesktop", null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
