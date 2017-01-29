@@ -1,11 +1,11 @@
-package bolinocuitino.agentemovil.agentes;
+package bolinocuitino.agentemovil.ontologia;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class MensajeConInformacion implements Serializable {
+import jade.content.Predicate;
 
-    private static final long serialVersionUID = -5116167114674610561L;
+public class InfoMensaje implements Predicate{
+    private static final long serialVersionUID = 6672632206985267350L;
     private String mensaje;
     private Date fecha;
     private String nombreHardware;
@@ -19,8 +19,37 @@ public class MensajeConInformacion implements Serializable {
     private String numeroDeTelefono;
     private String operadorDeTelefono;
 
+    public InfoMensaje() {
+        this.setMensaje("Mensaje por defecto");
+        this.setFecha(new Date());
+        this.setNombreHardware("Hardware por defecto");;
+        this.setSDKversionNumber(0);
+        this.setNombreDisplay("Display por defecto");
+        this.setNombreMarcaModelo("Marca y Modelo por defecto");
+        this.setUltimoSMS("No hay ultimo SMS");
+        this.setLatitud(0);
+        this.setLongitud(0);
+        this.setAltitud(0);
+        this.setNumeroDeTelefono("No se pudo obtener el número de teléfono");
+        this.setOperadorDeTelefono("No se pudo obtener el operador");
+    }
+
+    @Override
+    public String toString() {
+        return "Mensaje: " + this.getMensaje() + '\n' + "Fecha: " + this.getFecha().toString() + '\n' +
+                "Hardware: " + this.getNombreHardware() + '\n' + "SDK: " + this.getSDKversionNumber() + '\n' +
+                "Display: " + this.getNombreDisplay() + '\n' + "Nombre: " + this.getNombreMarcaModelo() + '\n' +
+                "Ultimo SMS: " + this.getUltimoSMS() + '\n' + "Latitud: " + this.getLatitud() + '\n' +
+                "Longitud: " +this.getLongitud() + '\n' + "Altitud: " + this.getAltitud() + '\n' +
+                "Numero: " +this.getNumeroDeTelefono() + '\n' + "Operador: " + this.getOperadorDeTelefono();
+    }
+
     public Date getFecha() {
         return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
     }
 
     public String getNombreHardware() {
@@ -87,11 +116,6 @@ public class MensajeConInformacion implements Serializable {
         this.altitud = altitud;
     }
 
-
-    public MensajeConInformacion() {
-        fecha = new Date();  //la fecha se pone sola al momento de la instanciación
-    }
-
     public String getMensaje() {
         return mensaje;
     }
@@ -115,6 +139,4 @@ public class MensajeConInformacion implements Serializable {
     public void setOperadorDeTelefono(String operadorDeTelefono) {
         this.operadorDeTelefono = operadorDeTelefono;
     }
-
-
 }

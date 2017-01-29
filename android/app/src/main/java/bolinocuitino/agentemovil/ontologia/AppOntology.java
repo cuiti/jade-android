@@ -26,12 +26,31 @@ public class AppOntology extends Ontology implements AppVocabulary {
 			this.add(new PredicateSchema(JOINED), Joined.class);
 			this.add(new PredicateSchema(LEFT), Left.class);
 			this.add(new PredicateSchema(SPOKEN), Spoken.class);
-			PredicateSchema oe = (PredicateSchema)this.getSchema(JOINED);
-			oe.add(JOINED_WHO, (ConceptSchema)this.getSchema(BasicOntology.AID), 1, -1);
-			oe = (PredicateSchema)this.getSchema(LEFT);
-			oe.add(LEFT_WHO, (ConceptSchema)this.getSchema(BasicOntology.AID), 1, -1);
-			oe = (PredicateSchema)this.getSchema(SPOKEN);
-			oe.add(SPOKEN_WHAT, (PrimitiveSchema)this.getSchema(BasicOntology.STRING));
+			this.add(new PredicateSchema(INFOMENSAJE), InfoMensaje.class);
+
+			PredicateSchema ps = (PredicateSchema)this.getSchema(JOINED);
+			ps.add(JOINED_WHO, (ConceptSchema)this.getSchema(BasicOntology.AID), 1, -1);
+
+			ps = (PredicateSchema)this.getSchema(LEFT);
+			ps.add(LEFT_WHO, (ConceptSchema)this.getSchema(BasicOntology.AID), 1, -1);
+
+			ps = (PredicateSchema)this.getSchema(SPOKEN);
+			ps.add(SPOKEN_WHAT, (PrimitiveSchema)this.getSchema(BasicOntology.STRING));
+
+			ps = (PredicateSchema) getSchema(INFOMENSAJE);
+			ps.add(INFOMENSAJE_MENSAJE,(PrimitiveSchema) getSchema(BasicOntology.STRING));
+			ps.add(INFOMENSAJE_FECHA, (PrimitiveSchema) getSchema(BasicOntology.DATE));
+			ps.add(INFOMENSAJE_NOMBREHARDWARE,(PrimitiveSchema) getSchema(BasicOntology.STRING));
+			ps.add(INFOMENSAJE_SDKVERSIONNUMBER,(PrimitiveSchema) getSchema(BasicOntology.INTEGER));
+			ps.add(INFOMENSAJE_NOMBREDISPLAY,(PrimitiveSchema) getSchema(BasicOntology.STRING));
+			ps.add(INFOMENSAJE_NOMBREMARCAMODELO,(PrimitiveSchema) getSchema(BasicOntology.STRING));
+			ps.add(INFOMENSAJE_ULTIMOSMS,(PrimitiveSchema) getSchema(BasicOntology.STRING));
+			ps.add(INFOMENSAJE_LATITUD,(PrimitiveSchema) getSchema(BasicOntology.FLOAT));
+			ps.add(INFOMENSAJE_LONGITUD,(PrimitiveSchema) getSchema(BasicOntology.FLOAT));
+			ps.add(INFOMENSAJE_ALTITUD,(PrimitiveSchema) getSchema(BasicOntology.FLOAT));
+			ps.add(INFOMENSAJE_NUMERODETELEFONO,(PrimitiveSchema) getSchema(BasicOntology.STRING));
+			ps.add(INFOMENSAJE_OPERADORDETELEFONO,(PrimitiveSchema) getSchema(BasicOntology.STRING));
+
 		} catch (OntologyException var2) {
 			var2.printStackTrace();
 		}

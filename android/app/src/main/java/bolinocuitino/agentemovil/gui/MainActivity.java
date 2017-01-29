@@ -2,7 +2,7 @@ package bolinocuitino.agentemovil.gui;
 
 import java.util.logging.Level;
 
-import bolinocuitino.agentemovil.agentes.AgenteMovil;
+import bolinocuitino.agentemovil.agentes.AgenteMobile;
 import jade.android.AndroidHelper;
 import jade.android.MicroRuntimeService;
 import jade.android.MicroRuntimeServiceBinder;
@@ -139,7 +139,7 @@ public class MainActivity extends Activity {
 							@Override
 							public void onFailure(Throwable throwable) {
 								logger.log(Level.SEVERE, "Failed to stop the "
-										+ AgenteMovil.class.getName()
+										+ AgenteMobile.class.getName()
 										+ "...");
 								agentStartupCallback.onFailure(throwable);
 							}
@@ -282,13 +282,13 @@ public class MainActivity extends Activity {
 	private void startAgent(final String nombreDispositivo,
 			final RuntimeCallback<AgentController> agentStartupCallback) {
 		microRuntimeServiceBinder.startAgent(nombreDispositivo,
-				AgenteMovil.class.getName(),
+				AgenteMobile.class.getName(),
 				new Object[] { getApplicationContext() },
 				new RuntimeCallback<Void>() {
 					@Override
 					public void onSuccess(Void thisIsNull) {
 						logger.log(Level.INFO, "Successfully start of the "
-								+ AgenteMovil.class.getName() + "...");
+								+ AgenteMobile.class.getName() + "...");
 						try {
 							agentStartupCallback.onSuccess(MicroRuntime
 									.getAgent(nombreDispositivo));
@@ -301,7 +301,7 @@ public class MainActivity extends Activity {
 					@Override
 					public void onFailure(Throwable throwable) {
 						logger.log(Level.SEVERE, "Failed to start the "
-								+ AgenteMovil.class.getName() + "...");
+								+ AgenteMobile.class.getName() + "...");
 						agentStartupCallback.onFailure(throwable);
 					}
 				});

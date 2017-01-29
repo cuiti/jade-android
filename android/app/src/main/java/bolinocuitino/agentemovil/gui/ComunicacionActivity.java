@@ -3,8 +3,8 @@ package bolinocuitino.agentemovil.gui;
 import java.util.Date;
 import java.util.logging.Level;
 
-import bolinocuitino.agentemovil.agentes.IAgenteMovil;
-import bolinocuitino.agentemovil.agentes.MensajeConInformacion;
+import bolinocuitino.agentemovil.agentes.IAgenteMobile;
+import bolinocuitino.agentemovil.ontologia.InfoMensaje;
 import jade.core.MicroRuntime;
 import jade.util.Logger;
 import jade.wrapper.ControllerException;
@@ -38,7 +38,7 @@ public class ComunicacionActivity extends Activity {
 	private MyReceiver myReceiver;
 
 	private String nombreDispositivo;
-	private IAgenteMovil interfazAgente;
+	private IAgenteMobile interfazAgente;
 	private String DISPOSITIVO_MARCA_MODELO = Build.BRAND + " " + Build.DEVICE;
 
 
@@ -53,7 +53,7 @@ public class ComunicacionActivity extends Activity {
 
 		try {
 			interfazAgente = MicroRuntime.getAgent(nombreDispositivo)
-					.getO2AInterface(IAgenteMovil.class);
+					.getO2AInterface(IAgenteMobile.class);
 		} catch (StaleProxyException e) {
 			showAlertDialog(getString(R.string.msg_interface_exc), true);
 		} catch (ControllerException e) {
@@ -167,52 +167,40 @@ public class ComunicacionActivity extends Activity {
 	}
 
 	private void enviarInformacionDelDispositivo() {
-		String ubicacionInfo = "";
-		String mensaje = "";
-		Date fecha = new Date();
-		String smsMsgData = getSMSdata();
+        InfoMensaje infoMensaje = new InfoMensaje();
+
+        infoMensaje.setMensaje("Configurar un mensaje");
+        infoMensaje.setFecha(new Date());
+        infoMensaje.setNombreHardware(Build.HARDWARE);
+        infoMensaje.setSDKversionNumber(Integer.parseInt(Build.VERSION.SDK));
+        infoMensaje.setNombreDisplay(Build.DISPLAY);
+        infoMensaje.setNombreMarcaModelo(Build.ID);
+        infoMensaje.setUltimoSMS(getSMSdata());
+
+        TelephonyManager telephonyManager =(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
+
+		String numero = telephonyManager.getLine1Number();
+
+		if(numero != null)
+			infoMensaje.setNumeroDeTelefono(numero);
+
+		String operador = telephonyManager.getNetworkOperator();
+
+		if(operador != null)
+			infoMensaje.setOperadorDeTelefono(operador);
+
 		Location geolocalizacion = getInformacionGeolocalizacion();
 
-		TelephonyManager tMgr =(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
-		String telefono = tMgr.getLine1Number();
-		if (telefono==null) telefono = "No se pudo obtener el número de teléfono";
-
-		if (geolocalizacion != null) {
-			ubicacionInfo += "Latitud: " + geolocalizacion.getLatitude() + " \n"
-					+ "Longitud: " + geolocalizacion.getLongitude() + " \n"
-					+ "Altitud: " + geolocalizacion.getAltitude() + " \n"
-					+ "Extras: " + geolocalizacion.getExtras() + " \n";
-		} else {
-			ubicacionInfo += "No se pueden obtener datos de geolocalización";
+		if(geolocalizacion != null) {
+			infoMensaje.setLatitud(geolocalizacion.getLatitude());
+			infoMensaje.setLongitud(geolocalizacion.getLongitude());
+			infoMensaje.setAltitud(geolocalizacion.getAltitude());
 		}
 
 		try {
-
-			mensaje += "----- " + DISPOSITIVO_MARCA_MODELO + " -----\n"
-					+ "Fecha: "+fecha.toLocaleString()+ " \n"
-					+ "ID: " + Build.ID + " \n"
-					+ "Teléfono: "+ telefono + " \n"
-					+ "Hardware name: " + Build.HARDWARE + " \n"
-					+ "SDK version: " + Build.VERSION.SDK + " \n"
-					+ "Display: " + Build.DISPLAY + " \n"
-					+ "-------  Ultimo SMS recibido  -------:  \n"
-					+ smsMsgData + " \n"
-					+ ubicacionInfo + " \n"
-					+ " -------------------------------------";
-			/*//envia las coordenadas por separado para mostrarlas en el mapa
-			if (geolocalizacion != null) { //location puede ser null cuando el usuario dehabilita la geolocalizacion
-				String latitude = String.valueOf(geolocalizacion.getLatitude());
-				String longitude = String.valueOf(geolocalizacion.getLongitude());
-				interfazAgente.handleSpoken(latitude + "#" + longitude);
-			}*/
-
-			MensajeConInformacion datos = new MensajeConInformacion();
-			datos.setMensaje("holis");
-			interfazAgente.handleSpoken(datos);
-
-
-
-		} catch (O2AException e) {
+            interfazAgente.handleSpoken(infoMensaje);
+        }
+        catch (O2AException e) {
 			showAlertDialog(e.getMessage(), false);
 		}
 

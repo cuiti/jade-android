@@ -1,10 +1,10 @@
 package bolinocuitino.agentemovil.agentes;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 
+import bolinocuitino.agentemovil.ontologia.InfoMensaje;
 import bolinocuitino.agentemovil.ontologia.Joined;
 import bolinocuitino.agentemovil.ontologia.AppOntology;
 import bolinocuitino.agentemovil.ontologia.Left;
@@ -14,6 +14,7 @@ import jade.content.Predicate;
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.Ontology;
+import jade.content.onto.OntologyException;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -28,20 +29,17 @@ import jade.util.leap.SortedSetImpl;
 import android.content.Intent;
 import android.content.Context;
 
-public class AgenteMovil extends Agent implements IAgenteMovil {
+public class AgenteMobile extends Agent implements IAgenteMobile {
 	private static final long serialVersionUID = 1594371294421614291L;
-
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
 
 	private static final String CHAT_ID = "__chat__";
-	private static final String CHAT_MANAGER_NAME = "manager";
+	private static final String ADMIN_NAME = "manager";
 
-	private Set participants = new SortedSetImpl();
+    private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
-	private Ontology onto = AppOntology.getInstance();
-	//private Ontology onto = ChatOntology.getInstance();
+	private Ontology ontology = AppOntology.getInstance();
 	private ACLMessage spokenMsg;
-
 	private Context context;
 
 	protected void setup() {
@@ -55,7 +53,7 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 		// Register language and ontology
 		ContentManager cm = getContentManager();
 		cm.registerLanguage(codec);
-		cm.registerOntology(onto);
+		cm.registerOntology(ontology);
 		cm.setValidationMode(false);
 
 		// Add initial behaviours
@@ -65,9 +63,11 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 		// Initialize the message used to convey spoken sentences
 		spokenMsg = new ACLMessage(ACLMessage.INFORM);
 		spokenMsg.setConversationId(CHAT_ID);
+		spokenMsg.setLanguage(codec.getName());
+		spokenMsg.setOntology(ontology.getName());
 
 		// Activate the GUI
-		registerO2AInterface(IAgenteMovil.class, this);
+		registerO2AInterface(IAgenteMobile.class, this);
 		
 		Intent broadcast = new Intent();
 		broadcast.setAction("jade.demo.chat.SHOW_CHAT");
@@ -85,14 +85,10 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 		context.sendBroadcast(broadcast);
 	}
 
-	private void notifySpoken(String speaker, Serializable datos) {
+	private void notifySpoken(String speaker, InfoMensaje infoMensaje) {
 		Intent broadcast = new Intent();
-
-		MensajeConInformacion m = (MensajeConInformacion)datos;
-		String mensajeEnElObjeto = m.getMensaje();
-
 		broadcast.setAction("jade.demo.chat.REFRESH_CHAT");
-		broadcast.putExtra("sentence", speaker + ": " + mensajeEnElObjeto + "\n");
+		broadcast.putExtra("sentence", speaker + ": " + infoMensaje + "\n");
 		logger.log(Level.INFO, "Sending broadcast " + broadcast.getAction());
 		context.sendBroadcast(broadcast);
 	}
@@ -120,7 +116,7 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 			 */
 			ACLMessage suscripcion = new ACLMessage(ACLMessage.SUBSCRIBE);
 			suscripcion.setLanguage(codec.getName());
-			suscripcion.setOntology(onto.getName());
+			suscripcion.setOntology(ontology.getName());
 			String convId = "C-" + myAgent.getLocalName();
 			suscripcion.setConversationId(convId);
 			/**
@@ -128,7 +124,7 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 			 *  los agentes en las tablas de agentes.
 			 * Con esta línea el agente se agrega a si mismo como receptor de la suscripcion
 			   */
-			suscripcion.addReceiver(new AID(CHAT_MANAGER_NAME, AID.ISLOCALNAME));
+			suscripcion.addReceiver(new AID(ADMIN_NAME, AID.ISLOCALNAME));
 			myAgent.send(suscripcion);
 			/**
 			 * La clase MessageTemplate sirve para filtrar la información dentro de los ACLmessage,
@@ -191,8 +187,17 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 			ACLMessage msg = myAgent.receive(template);
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
-					notifySpoken(msg.getSender().getLocalName(),
-							msg.getContent());
+                    try {
+                        ContentManager cm = myAgent.getContentManager();
+                        InfoMensaje infoMensaje = (InfoMensaje) cm.extractContent(msg);
+                        notifySpoken(msg.getSender().getLocalName(), infoMensaje);
+                    }
+                    catch (OntologyException  e1) {
+                        e1.printStackTrace();
+                    }
+                    catch (Codec.CodecException e2){
+                        e2.printStackTrace();
+                    }
 				} else {
 					handleUnexpected(msg);
 				}
@@ -203,43 +208,38 @@ public class AgenteMovil extends Agent implements IAgenteMovil {
 	} // END of inner class ChatListener
 
 	private class EnvioDeInformacion extends OneShotBehaviour {
-		private Serializable datos;
-		private EnvioDeInformacion(Agent a, Serializable s) {
+		private InfoMensaje datos;
+		private EnvioDeInformacion(Agent a, InfoMensaje infoMensaje) {
 			super(a);
-			datos = s;
+			datos = infoMensaje;
 		}
 
 		public void action() {
-
 			spokenMsg.clearAllReceiver();
 			Iterator it = participants.iterator();
 			while (it.hasNext()) {
-				spokenMsg.addReceiver((AID) it.next());}
-
+				spokenMsg.addReceiver((AID) it.next());
+            }
 
 			try {
-				spokenMsg.setContentObject(datos);  //aca setea el objeto con los datos
-			} catch (IOException e) {
-				e.printStackTrace();
+                ContentManager cm = myAgent.getContentManager();
+                cm.fillContent(spokenMsg,datos);;
+			} catch (Codec.CodecException e1) {
+				e1.printStackTrace();
+			} catch (OntologyException e2) {
+				e2.printStackTrace();
 			}
 			notifySpoken(myAgent.getLocalName(), datos);
-
-			try {
-				System.out.println("######## MENSAJE ENVIADO: "+((MensajeConInformacion)spokenMsg.getContentObject()).getMensaje());
-			} catch (UnreadableException e) {
-				e.printStackTrace();
-			}
-
-			send(spokenMsg);
+    		send(spokenMsg);
 		}
 	}
 
 	// ///////////////////////////////////////
 	// Methods called by the interface
 	// ///////////////////////////////////////
-	public void handleSpoken(Serializable s) {
+	public void handleSpoken(InfoMensaje infoMensaje) {
 		// usa el behaviour EnvioDeInformacion para enviar la info a todos los otros dispositivos
-		addBehaviour(new EnvioDeInformacion(this, s));
+		addBehaviour(new EnvioDeInformacion(this, infoMensaje));
 	}
 	
 	/*public String[] getParticipantNames() {
