@@ -152,13 +152,14 @@ public class AgenteDesktop extends Agent {
 	 */
 	class ChatListener extends CyclicBehaviour {
 		private static final long serialVersionUID = 4881864151160276717L;
+		private MessageTemplate template = MessageTemplate.MatchConversationId(CHAT_ID);
 		
 		ChatListener(Agent a) {
 			super(a);
 		}
 
 		public void action() {
-			ACLMessage msg = myAgent.receive();
+			ACLMessage msg = myAgent.receive(template);
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
 					try {

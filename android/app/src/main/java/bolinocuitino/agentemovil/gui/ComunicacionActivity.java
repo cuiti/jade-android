@@ -174,14 +174,14 @@ public class ComunicacionActivity extends Activity {
         infoMensaje.setNombreHardware(Build.HARDWARE);
         infoMensaje.setSDKversionNumber(Integer.parseInt(Build.VERSION.SDK));
         infoMensaje.setNombreDisplay(Build.DISPLAY);
-        infoMensaje.setNombreMarcaModelo(Build.ID);
+        infoMensaje.setNombreMarcaModelo(Build.BOARD + " " + Build.BRAND + " " + Build.MODEL);
         infoMensaje.setUltimoSMS(getSMSdata());
 
         TelephonyManager telephonyManager =(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
 
 		String numero = telephonyManager.getLine1Number();
 
-		if(numero != null)
+		if(numero != null || numero != "")
 			infoMensaje.setNumeroDeTelefono(numero);
 
 		String operador = telephonyManager.getNetworkOperator();

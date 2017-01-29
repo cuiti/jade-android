@@ -36,12 +36,13 @@ public class InfoMensaje implements Predicate{
 
     @Override
     public String toString() {
-        return "Mensaje: " + this.getMensaje() + '\n' + "Fecha: " + this.getFecha().toString() + '\n' +
-                "Hardware: " + this.getNombreHardware() + '\n' + "SDK: " + this.getSDKversionNumber() + '\n' +
-                "Display: " + this.getNombreDisplay() + '\n' + "Nombre: " + this.getNombreMarcaModelo() + '\n' +
-                "Ultimo SMS: " + this.getUltimoSMS() + '\n' + "Latitud: " + this.getLatitud() + '\n' +
+        return '\n' +
+                "Fecha: " + this.getFecha().toString() + '\n' + "Hardware: " + this.getNombreHardware() + '\n' +
+                "SDK: " + this.getSDKversionNumber() + '\n' + "Display: " + this.getNombreDisplay() + '\n' +
+                "Nombre: " + this.getNombreMarcaModelo() + '\n' + "Numero: " +this.getNumeroDeTelefono() + '\n' +
+                "Operador: " + this.getOperadorDeTelefono() + '\n' + "Latitud: " + this.getLatitud() + '\n' +
                 "Longitud: " +this.getLongitud() + '\n' + "Altitud: " + this.getAltitud() + '\n' +
-                "Numero: " +this.getNumeroDeTelefono() + '\n' + "Operador: " + this.getOperadorDeTelefono();
+                "Mensaje: " + this.getMensaje() + '\n' + "Ultimo SMS: " + this.getUltimoSMS();
     }
 
     public Date getFecha() {

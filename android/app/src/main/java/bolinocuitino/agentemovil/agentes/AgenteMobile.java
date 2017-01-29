@@ -176,8 +176,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	 */
 	private class ChatListener extends CyclicBehaviour {
 		private static final long serialVersionUID = 741233963737842521L;
-		private MessageTemplate template = MessageTemplate
-				.MatchConversationId(CHAT_ID);
+		private MessageTemplate template = MessageTemplate.MatchConversationId(CHAT_ID);
 
 		ChatListener(Agent a) {
 			super(a);
