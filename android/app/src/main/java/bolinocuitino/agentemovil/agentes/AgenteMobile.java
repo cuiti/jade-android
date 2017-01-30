@@ -31,13 +31,13 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private static final long serialVersionUID = 1594371294421614291L;
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
 
-	private static final String CHAT_ID = "__chat__";
+	private static final String INFO_ID = "__info__";
 	private static final String ADMIN_NAME = "manager";
 
     private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
 	private Ontology ontology = AppOntology.getInstance();
-	private ACLMessage spokenMsg;
+	private ACLMessage mensaje;
 	private Context context;
 
 	protected void setup() {
@@ -48,23 +48,19 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			}
 		}
 		
-		// Register language and ontology
 		ContentManager cm = getContentManager();
 		cm.registerLanguage(codec);
 		cm.registerOntology(ontology);
 		cm.setValidationMode(false);
 
-		// Add initial behaviours
 		addBehaviour(new AdministradorDeSuscripcion(this));
-		addBehaviour(new ChatListener(this));
+		addBehaviour(new InformacionRecibida(this));
 
-		// Initialize the message used to convey spoken sentences
-		spokenMsg = new ACLMessage(ACLMessage.INFORM);
-		spokenMsg.setConversationId(CHAT_ID);
-		spokenMsg.setLanguage(codec.getName());
-		spokenMsg.setOntology(ontology.getName());
+		mensaje = new ACLMessage(ACLMessage.INFORM);
+		mensaje.setConversationId(INFO_ID);
+		mensaje.setLanguage(codec.getName());
+		mensaje.setOntology(ontology.getName());
 
-		// Activate the GUI
 		registerO2AInterface(IAgenteMobile.class, this);
 
 		//una vez que el Agente arranca, avisa por broadcast, y el MainActivity escucha e incia
@@ -165,11 +161,11 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	 * and keeps the list of participants up to date by managing the information
 	 * received from the ChatManager agent.
 	 */
-	private class ChatListener extends CyclicBehaviour {
+	private class InformacionRecibida extends CyclicBehaviour {
 		private static final long serialVersionUID = 741233963737842521L;
-		private MessageTemplate template = MessageTemplate.MatchConversationId(CHAT_ID);
+		private MessageTemplate template = MessageTemplate.MatchConversationId(INFO_ID);
 
-		ChatListener(Agent a) {
+		InformacionRecibida(Agent a) {
 			super(a);
 		}
 
@@ -197,36 +193,37 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		}
 	}
 
-	private class EnvioDeInformacion extends OneShotBehaviour {
+	private class InformacionEnviada extends OneShotBehaviour {
 		private InfoMensaje datos;
-		private EnvioDeInformacion(Agent a, InfoMensaje infoMensaje) {
+		
+		private InformacionEnviada(Agent a, InfoMensaje infoMensaje) {
 			super(a);
 			datos = infoMensaje;
 		}
 
 		public void action() {
-			spokenMsg.clearAllReceiver();
+			mensaje.clearAllReceiver();
 			Iterator it = participants.iterator();
 			while (it.hasNext()) {
-				spokenMsg.addReceiver((AID) it.next());
+				mensaje.addReceiver((AID) it.next());
             }
 
 			try {
                 ContentManager cm = myAgent.getContentManager();
-                cm.fillContent(spokenMsg,datos);
+                cm.fillContent(mensaje,datos);
 			} catch (Codec.CodecException e1) {
 				e1.printStackTrace();
 			} catch (OntologyException e2) {
 				e2.printStackTrace();
 			}
 			notifySpoken(myAgent.getLocalName(), datos);
-    		send(spokenMsg);
+    		send(mensaje);
 		}
 	}
 
 	public void handleSpoken(InfoMensaje infoMensaje) {
 		// usa el behaviour EnvioDeInformacion para enviar la info a todos los otros dispositivos
-		addBehaviour(new EnvioDeInformacion(this, infoMensaje));
+		addBehaviour(new InformacionEnviada(this, infoMensaje));
 	}
 
 	private void handleUnexpected(ACLMessage msg) {

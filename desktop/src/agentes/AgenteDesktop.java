@@ -28,7 +28,7 @@ public class AgenteDesktop extends Agent {
 	private static final long serialVersionUID = 1594371294421614291L;
 	private Logger logger = Logger.getMyLogger(this.getClass().getName());
 
-	private static final String CHAT_ID = "__chat__";
+	private static final String INFO_ID = "__info__";
 	private static final String ADMIN_NAME = "manager";
 
 	private ControlPanel controlPanel;
@@ -43,11 +43,11 @@ public class AgenteDesktop extends Agent {
 		cm.registerOntology(ontology);
 		cm.setValidationMode(false);
 
-		addBehaviour(new AdministradorDeConectados(this));
-		addBehaviour(new MensajeRecibido(this));
+		addBehaviour(new AdministradorDeSuscripcion(this));
+		addBehaviour(new InformacionRecibida(this));
 
 		mensaje = new ACLMessage(ACLMessage.INFORM);
-		mensaje.setConversationId(CHAT_ID);
+		mensaje.setConversationId(INFO_ID);
 		mensaje.setLanguage(codec.getName());
 		mensaje.setOntology(ontology.getName());
 		
@@ -63,22 +63,22 @@ public class AgenteDesktop extends Agent {
 		controlPanel.notifySpoken(speaker, mensaje);
 	}
 		
-	class AdministradorDeConectados extends CyclicBehaviour {
+	class AdministradorDeSuscripcion extends CyclicBehaviour {
 		private static final long serialVersionUID = -4845730529175649756L;
 		private MessageTemplate template;
 
-		AdministradorDeConectados(Agent a) {
+		AdministradorDeSuscripcion(Agent a) {
 			super(a);
 		}
 
 		public void onStart() {
-			ACLMessage subscription = new ACLMessage(ACLMessage.SUBSCRIBE);
-			subscription.setLanguage(codec.getName());
-			subscription.setOntology(ontology.getName());
+			ACLMessage subscripcion = new ACLMessage(ACLMessage.SUBSCRIBE);
+			subscripcion.setLanguage(codec.getName());
+			subscripcion.setOntology(ontology.getName());
 			String convId = "C-" + myAgent.getLocalName();
-			subscription.setConversationId(convId);
-			subscription.addReceiver(new AID(ADMIN_NAME, AID.ISLOCALNAME));
-			myAgent.send(subscription);
+			subscripcion.setConversationId(convId);
+			subscripcion.addReceiver(new AID(ADMIN_NAME, AID.ISLOCALNAME));
+			myAgent.send(subscripcion);
 			template = MessageTemplate.MatchConversationId(convId);
 		}
 
@@ -124,11 +124,11 @@ public class AgenteDesktop extends Agent {
 		}
 	} 
 	
-	class MensajeRecibido extends CyclicBehaviour {
+	class InformacionRecibida extends CyclicBehaviour {
 		private static final long serialVersionUID = 4881864151160276717L;
-		private MessageTemplate template = MessageTemplate.MatchConversationId(CHAT_ID);
+		private MessageTemplate template = MessageTemplate.MatchConversationId(INFO_ID);
 		
-		MensajeRecibido(Agent a) {
+		InformacionRecibida(Agent a) {
 			super(a);
 		}
 
