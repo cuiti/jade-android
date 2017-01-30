@@ -204,7 +204,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 				block();
 			}
 		}
-	} // END of inner class ChatListener
+	}
 
 	private class EnvioDeInformacion extends OneShotBehaviour {
 		private InfoMensaje datos;
@@ -222,7 +222,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 
 			try {
                 ContentManager cm = myAgent.getContentManager();
-                cm.fillContent(spokenMsg,datos);;
+                cm.fillContent(spokenMsg,datos);
 			} catch (Codec.CodecException e1) {
 				e1.printStackTrace();
 			} catch (OntologyException e2) {
@@ -233,28 +233,11 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		}
 	}
 
-	// ///////////////////////////////////////
-	// Methods called by the interface
-	// ///////////////////////////////////////
 	public void handleSpoken(InfoMensaje infoMensaje) {
 		// usa el behaviour EnvioDeInformacion para enviar la info a todos los otros dispositivos
 		addBehaviour(new EnvioDeInformacion(this, infoMensaje));
 	}
-	
-	/*public String[] getParticipantNames() {
-		String[] pp = new String[participants.size()];
-		Iterator it = participants.iterator();
-		int i = 0;
-		while (it.hasNext()) {
-			AID id = (AID) it.next();
-			pp[i++] = id.getLocalName();
-		}
-		return pp;
-	}*/
 
-	// ///////////////////////////////////////
-	// Private utility method
-	// ///////////////////////////////////////
 	private void handleUnexpected(ACLMessage msg) {
 		if (logger.isLoggable(Logger.WARNING)) {
 			logger.log(Logger.WARNING, "Unexpected message received from "
@@ -262,5 +245,4 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			logger.log(Logger.WARNING, "Content is: " + msg.getContent());
 		}
 	}
-
 }

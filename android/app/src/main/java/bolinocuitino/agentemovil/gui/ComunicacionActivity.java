@@ -184,7 +184,7 @@ public class ComunicacionActivity extends Activity {
 		if((numero != null) && !numero.isEmpty())
 			infoMensaje.setNumeroDeTelefono(numero);
 
-		String operador = telephonyManager.getNetworkOperator();
+		String operador = telephonyManager.getNetworkOperatorName();
 
 		if(operador != null)
 			infoMensaje.setOperadorDeTelefono(operador);
