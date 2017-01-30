@@ -1,6 +1,5 @@
 package bolinocuitino.agentemovil.agentes;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -21,7 +20,6 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 import jade.util.Logger;
 import jade.util.leap.Iterator;
 import jade.util.leap.Set;
@@ -68,9 +66,11 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 
 		// Activate the GUI
 		registerO2AInterface(IAgenteMobile.class, this);
-		
+
+		//una vez que el Agente arranca, avisa por broadcast, y el MainActivity escucha e incia
+		//el activity de comunicación
 		Intent broadcast = new Intent();
-		broadcast.setAction("jade.demo.chat.SHOW_CHAT");
+		broadcast.setAction("bolinocuitino.agentemovil.INICIAR_COMUNICACION");
 		logger.log(Level.INFO, "Sending broadcast " + broadcast.getAction());
 		context.sendBroadcast(broadcast);
 	}
@@ -78,17 +78,10 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	protected void takeDown() {
 	}
 
-	private void notifyParticipantsChanged() {
+	private void notifySpoken(String emisor, InfoMensaje infoMensaje) {
 		Intent broadcast = new Intent();
-		broadcast.setAction("jade.demo.chat.REFRESH_PARTICIPANTS");
-		logger.log(Level.INFO, "Sending broadcast " + broadcast.getAction());
-		context.sendBroadcast(broadcast);
-	}
-
-	private void notifySpoken(String speaker, InfoMensaje infoMensaje) {
-		Intent broadcast = new Intent();
-		broadcast.setAction("jade.demo.chat.REFRESH_CHAT");
-		broadcast.putExtra("sentence", speaker + ": " + infoMensaje + "\n");
+		broadcast.setAction("bolinocuitino.agentemovil.ACTUALIZAR");
+		broadcast.putExtra("informacion", emisor + ": " + infoMensaje + "\n");
 		logger.log(Level.INFO, "Sending broadcast " + broadcast.getAction());
 		context.sendBroadcast(broadcast);
 	}
@@ -147,14 +140,12 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 							List<AID> aid = (List<AID>) joined.getWho();
 							for(AID a : aid)
 								participants.add(a);
-							notifyParticipantsChanged();
 						}
 						if(p instanceof Left) {
 							Left left = (Left) p;
 							List<AID> aid = (List<AID>) left.getWho();
 							for(AID a : aid)
 								participants.remove(a);
-							notifyParticipantsChanged();
 						}
 					} catch (Exception e) {
 						Logger.println(e.toString());

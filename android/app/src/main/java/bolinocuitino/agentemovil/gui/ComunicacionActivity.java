@@ -11,10 +11,8 @@ import jade.wrapper.ControllerException;
 import jade.wrapper.O2AException;
 import jade.wrapper.StaleProxyException;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -31,6 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ComunicacionActivity extends Activity {
 	private Logger logger = Logger.getJADELogger(this.getClass().getName());
@@ -55,20 +54,18 @@ public class ComunicacionActivity extends Activity {
 			interfazAgente = MicroRuntime.getAgent(nombreDispositivo)
 					.getO2AInterface(IAgenteMobile.class);
 		} catch (StaleProxyException e) {
-			showAlertDialog(getString(R.string.msg_interface_exc), true);
+			Toast.makeText(this,"Error interno al crear Runtime JADE",Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
 		} catch (ControllerException e) {
-			showAlertDialog(getString(R.string.msg_controller_exc), true);
+			Toast.makeText(this,"Error interno al crear Runtime JADE",Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
 		}
 
 		myReceiver = new MyReceiver();
 
 		IntentFilter refreshChatFilter = new IntentFilter();
-		refreshChatFilter.addAction("jade.demo.chat.REFRESH_CHAT");
+		refreshChatFilter.addAction("bolinocuitino.agentemovil.ACTUALIZAR");
 		registerReceiver(myReceiver, refreshChatFilter);
-
-		IntentFilter clearChatFilter = new IntentFilter();
-		clearChatFilter.addAction("jade.demo.chat.CLEAR_CHAT");
-		registerReceiver(myReceiver, clearChatFilter);
 
 		setContentView(R.layout.chat);
 
@@ -116,14 +113,10 @@ public class ComunicacionActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			logger.log(Level.INFO, "Received intent " + action);
-			if (action.equalsIgnoreCase("jade.demo.chat.REFRESH_CHAT")) {
+			if (action.equalsIgnoreCase("bolinocuitino.agentemovil.ACTUALIZAR")) {
 				final TextView chatField = (TextView) findViewById(R.id.chatTextView);
-				chatField.append(intent.getExtras().getString("sentence"));
+				chatField.append(intent.getExtras().getString("informacion"));
 				scrollDown();
-			}
-			if (action.equalsIgnoreCase("jade.demo.chat.CLEAR_CHAT")) {
-				final TextView chatField = (TextView) findViewById(R.id.chatTextView);
-				chatField.setText("");
 			}
 		}
 	}
@@ -147,23 +140,6 @@ public class ComunicacionActivity extends Activity {
 		super.onRestoreInstanceState(savedInstanceState);
 		final TextView chatField = (TextView) findViewById(R.id.chatTextView);
 		chatField.setText(savedInstanceState.getString("chatField"));
-	}
-
-	private void showAlertDialog(String message, final boolean fatal) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(
-				ComunicacionActivity.this);
-		builder.setMessage(message)
-				.setCancelable(false)
-				.setPositiveButton("Ok",
-						new DialogInterface.OnClickListener() {
-							public void onClick(
-									DialogInterface dialog, int id) {
-								dialog.cancel();
-								if (fatal) finish();
-							}
-						});
-		AlertDialog alert = builder.create();
-		alert.show();
 	}
 
 	private void enviarInformacionDelDispositivo() {
@@ -201,7 +177,7 @@ public class ComunicacionActivity extends Activity {
             interfazAgente.handleSpoken(infoMensaje);
         }
         catch (O2AException e) {
-			showAlertDialog(e.getMessage(), false);
+			Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG).show();
 		}
 
 	}
@@ -209,7 +185,7 @@ public class ComunicacionActivity extends Activity {
 	private String getSmsMasReciente() {
 		String smsMessage = "";
 		Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
-		if (cursor.moveToFirst()) { // must check the result to prevent exception
+		if (cursor.moveToFirst()) {
 			//do {
 			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("address")) + " \n";
 			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("body")) + " \n";

@@ -41,7 +41,6 @@ public class MainActivity extends Activity {
 	private ServiceConnection serviceConnection;  //para usar el servicio de android
 
 	static final int CHAT_REQUEST = 0;
-	static final int SETTINGS_REQUEST = 1;
 
 	private MyReceiver myReceiver;
 	private MyHandler myHandler;
@@ -58,12 +57,8 @@ public class MainActivity extends Activity {
 
 		myReceiver = new MyReceiver();
 
-		IntentFilter killFilter = new IntentFilter();
-		killFilter.addAction("jade.demo.chat.KILL");
-		registerReceiver(myReceiver, killFilter);
-
 		IntentFilter showChatFilter = new IntentFilter();
-		showChatFilter.addAction("jade.demo.chat.SHOW_CHAT");
+		showChatFilter.addAction("bolinocuitino.agentemovil.INICIAR_COMUNICACION");
 		registerReceiver(myReceiver, showChatFilter);
 
 		myHandler = new MyHandler();
@@ -178,15 +173,12 @@ public class MainActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			logger.log(Level.INFO, "Received intent " + action);
-			if (action.equalsIgnoreCase("jade.demo.chat.KILL")) {
-				finish();
-			}
-			if (action.equalsIgnoreCase("jade.demo.chat.SHOW_CHAT")) {
-				Intent showChat = new Intent(MainActivity.this,
+			if (action.equalsIgnoreCase("bolinocuitino.agentemovil.INICIAR_COMUNICACION")) {
+				Intent iniciarComunicacion = new Intent(MainActivity.this,
 						ComunicacionActivity.class);
-				showChat.putExtra("nombreDispositivo", nombreDispositivo);
+				iniciarComunicacion.putExtra("nombreDispositivo", nombreDispositivo);
 				MainActivity.this
-						.startActivityForResult(showChat, CHAT_REQUEST);
+						.startActivityForResult(iniciarComunicacion, CHAT_REQUEST);
 			}
 		}
 	}
