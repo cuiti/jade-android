@@ -32,23 +32,20 @@ public class AgenteDesktop extends Agent {
 	private static final String ADMIN_NAME = "manager";
 
 	private ControlPanel controlPanel;
-	private Set participants = new SortedSetImpl();
+	private Set conectados = new SortedSetImpl();
 	private Codec codec = new SLCodec();
 	private Ontology ontology = AppOntology.getInstance();
 	private ACLMessage mensaje;
 
 	protected void setup() {
-		// Register language and ontology
 		ContentManager cm = getContentManager();
 		cm.registerLanguage(codec);
 		cm.registerOntology(ontology);
 		cm.setValidationMode(false);
 
-		// Add initial behaviours
-		addBehaviour(new ParticipantsManager(this));
+		addBehaviour(new AdministradorDeConectados(this));
 		addBehaviour(new MensajeRecibido(this));
 
-		// Initialize the message used to convey spoken sentences
 		mensaje = new ACLMessage(ACLMessage.INFORM);
 		mensaje.setConversationId(CHAT_ID);
 		mensaje.setLanguage(codec.getName());
@@ -65,76 +62,63 @@ public class AgenteDesktop extends Agent {
 	private void notifySpoken(String speaker, InfoMensaje mensaje) {
 		controlPanel.notifySpoken(speaker, mensaje);
 	}
-	
-	
-	class ParticipantsManager extends CyclicBehaviour {
+		
+	class AdministradorDeConectados extends CyclicBehaviour {
 		private static final long serialVersionUID = -4845730529175649756L;
 		private MessageTemplate template;
 
-		ParticipantsManager(Agent a) {
+		AdministradorDeConectados(Agent a) {
 			super(a);
 		}
 
 		public void onStart() {
-			// Subscribe as a chat participant to the ChatManager agent
 			ACLMessage subscription = new ACLMessage(ACLMessage.SUBSCRIBE);
 			subscription.setLanguage(codec.getName());
 			subscription.setOntology(ontology.getName());
 			String convId = "C-" + myAgent.getLocalName();
 			subscription.setConversationId(convId);
-			subscription
-					.addReceiver(new AID(ADMIN_NAME, AID.ISLOCALNAME));
+			subscription.addReceiver(new AID(ADMIN_NAME, AID.ISLOCALNAME));
 			myAgent.send(subscription);
-			// Initialize the template used to receive notifications
-			// from the ChatManagerAgent
 			template = MessageTemplate.MatchConversationId(convId);
 		}
 
 		public void action() {
-			// Receives information about people joining and leaving
-			// the chat from the ChatManager agent
 			ACLMessage msg = myAgent.receive(template);
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
 					try {
-						AbsPredicate p = (AbsPredicate) myAgent
-							.getContentManager().extractAbsContent(msg);
+						AbsPredicate p = (AbsPredicate) myAgent.getContentManager().extractAbsContent(msg);
 						if (p.getTypeName().equals(AppOntology.JOINED)) {
-							// Get new participants, add them to the list of
-							// participants and notify the gui
-							AbsAggregate agg = (AbsAggregate) p
-									.getAbsTerm(AppOntology.JOINED_WHO);
+							AbsAggregate agg = (AbsAggregate) p.getAbsTerm(AppOntology.JOINED_WHO);
 							if (agg != null) {
 								Iterator it = agg.iterator();
 								while (it.hasNext()) {
 									AbsConcept c = (AbsConcept) it.next();
-									participants.add(BasicOntology
-											.getInstance().toObject(c));
+									conectados.add(BasicOntology.getInstance().toObject(c));
 								}
 							}
 						}
 						if (p.getTypeName().equals(AppOntology.LEFT)) {
-							// Get old participants, remove them from the list
-							// of participants and notify the gui
-							AbsAggregate agg = (AbsAggregate) p
-									.getAbsTerm(AppOntology.JOINED_WHO);
+							AbsAggregate agg = (AbsAggregate) p.getAbsTerm(AppOntology.JOINED_WHO);
 							if (agg != null) {
 								Iterator it = agg.iterator();
 								while (it.hasNext()) {
 									AbsConcept c = (AbsConcept) it.next();
-									participants.remove(BasicOntology
-											.getInstance().toObject(c));
+									conectados.remove(BasicOntology.getInstance().toObject(c));
 								}
 							}
 						}
-					} catch (Exception e) {
+					} 
+					catch (Exception e) {
 						Logger.println(e.toString());
 						e.printStackTrace();
 					}
-				} else {
+				} 
+				else {
 					loguearErrores(msg);
 				}
-			} else {
+			} 
+			else {
 				block();
 			}
 		}
@@ -172,8 +156,8 @@ public class AgenteDesktop extends Agent {
 	} 
 	
 	public String[] getParticipantNames() {
-		String[] pp = new String[participants.size()];
-		Iterator it = participants.iterator();
+		String[] pp = new String[conectados.size()];
+		Iterator it = conectados.iterator();
 		int i = 0;
 		while (it.hasNext()) {
 			AID id = (AID) it.next();
