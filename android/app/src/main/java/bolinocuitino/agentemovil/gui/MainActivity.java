@@ -115,7 +115,7 @@ public class MainActivity extends Activity {
 				String port = settings.getString("defaultPort", "");
 				informacionTextView.setText(getString(R.string.msg_connecting_to)
 						+ " " + host + ":" + port + "...");
-				startChat(nombreDispositivo, host, port, agentStartupCallback);
+				iniciarComunicacion(nombreDispositivo, host, port, agentStartupCallback);
 			} catch (Exception ex) {
 				logger.log(Level.SEVERE, "excepcion al inicializar el agente!");
 				informacionTextView.setText(getString(R.string.msg_unexpected));
@@ -211,9 +211,9 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	public void startChat(final String nickname, final String host,
-			final String port,
-			final RuntimeCallback<AgentController> agentStartupCallback) {
+	public void iniciarComunicacion(final String nombreDispositivo, final String host,
+									final String port,
+									final RuntimeCallback<AgentController> agentStartupCallback) {
 
 		//la clase Properties es de JADE LEAP para guardar informacion clave valor
 		//Profile es de JADE core, se usa para las propiedades de un container
@@ -240,7 +240,7 @@ public class MainActivity extends Activity {
 						IBinder service) {
 					microRuntimeServiceBinder = (MicroRuntimeServiceBinder) service;
 					logger.log(Level.INFO, "Gateway successfully bound to MicroRuntimeService");
-					startContainer(nickname, perfil, agentStartupCallback);
+					startContainer(nombreDispositivo, perfil, agentStartupCallback);
 				}
 
 				public void onServiceDisconnected(ComponentName className) {
@@ -254,7 +254,7 @@ public class MainActivity extends Activity {
 					Context.BIND_AUTO_CREATE);
 		} else {
 			logger.log(Level.INFO, "MicroRumtimeGateway already binded to service");
-			startContainer(nickname, perfil, agentStartupCallback);
+			startContainer(nombreDispositivo, perfil, agentStartupCallback);
 		}
 	}
 

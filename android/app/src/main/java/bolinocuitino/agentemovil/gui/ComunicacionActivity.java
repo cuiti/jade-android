@@ -175,13 +175,13 @@ public class ComunicacionActivity extends Activity {
         infoMensaje.setSDKversionNumber(Integer.parseInt(Build.VERSION.SDK));
         infoMensaje.setNombreDisplay(Build.DISPLAY);
         infoMensaje.setNombreMarcaModelo(Build.BOARD + " " + Build.BRAND + " " + Build.MODEL);
-        infoMensaje.setUltimoSMS(getSMSdata());
+        infoMensaje.setUltimoSMS(getSmsMasReciente());
 
         TelephonyManager telephonyManager =(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
 
 		String numero = telephonyManager.getLine1Number();
 
-		if(numero != null || numero != "")
+		if((numero != null) && !numero.isEmpty())
 			infoMensaje.setNumeroDeTelefono(numero);
 
 		String operador = telephonyManager.getNetworkOperator();
@@ -206,7 +206,7 @@ public class ComunicacionActivity extends Activity {
 
 	}
 
-	private String getSMSdata() {
+	private String getSmsMasReciente() {
 		String smsMessage = "";
 		Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
 		if (cursor.moveToFirst()) { // must check the result to prevent exception
