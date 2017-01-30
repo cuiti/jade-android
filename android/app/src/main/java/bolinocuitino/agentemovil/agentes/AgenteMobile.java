@@ -193,10 +193,10 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		}
 	}
 
-	private class InformacionEnviada extends OneShotBehaviour {
+	private class EnvioDeInformacion extends OneShotBehaviour {
 		private InfoMensaje datos;
-		
-		private InformacionEnviada(Agent a, InfoMensaje infoMensaje) {
+
+		private EnvioDeInformacion(Agent a, InfoMensaje infoMensaje) {
 			super(a);
 			datos = infoMensaje;
 		}
@@ -223,7 +223,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 
 	public void handleSpoken(InfoMensaje infoMensaje) {
 		// usa el behaviour EnvioDeInformacion para enviar la info a todos los otros dispositivos
-		addBehaviour(new InformacionEnviada(this, infoMensaje));
+		addBehaviour(new EnvioDeInformacion(this, infoMensaje));
 	}
 
 	private void handleUnexpected(ACLMessage msg) {

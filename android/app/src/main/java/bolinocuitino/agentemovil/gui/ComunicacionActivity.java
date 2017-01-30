@@ -162,7 +162,7 @@ public class ComunicacionActivity extends Activity {
 
 		String operador = telephonyManager.getNetworkOperatorName();
 
-		if(operador != null)
+		if(operador != null && !operador.isEmpty())
 			infoMensaje.setOperadorDeTelefono(operador);
 
 		Location geolocalizacion = getInformacionGeolocalizacion();
@@ -203,7 +203,6 @@ public class ComunicacionActivity extends Activity {
 	}
 
 	private Location getInformacionGeolocalizacion() {
-		//String locationInfo = "";
 		Context context = getApplicationContext();
 		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		Criteria criteria = new Criteria();
