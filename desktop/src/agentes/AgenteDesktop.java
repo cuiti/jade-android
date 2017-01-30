@@ -13,7 +13,6 @@ import jade.content.onto.OntologyException;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.util.Logger;
@@ -36,7 +35,7 @@ public class AgenteDesktop extends Agent {
 	private Set participants = new SortedSetImpl();
 	private Codec codec = new SLCodec();
 	private Ontology ontology = AppOntology.getInstance();
-	private ACLMessage spokenMsg;
+	private ACLMessage mensaje;
 
 	protected void setup() {
 		// Register language and ontology
@@ -47,13 +46,13 @@ public class AgenteDesktop extends Agent {
 
 		// Add initial behaviours
 		addBehaviour(new ParticipantsManager(this));
-		addBehaviour(new ChatListener(this));
+		addBehaviour(new MensajeRecibido(this));
 
 		// Initialize the message used to convey spoken sentences
-		spokenMsg = new ACLMessage(ACLMessage.INFORM);
-		spokenMsg.setConversationId(CHAT_ID);
-		spokenMsg.setLanguage(codec.getName());
-		spokenMsg.setOntology(ontology.getName());
+		mensaje = new ACLMessage(ACLMessage.INFORM);
+		mensaje.setConversationId(CHAT_ID);
+		mensaje.setLanguage(codec.getName());
+		mensaje.setOntology(ontology.getName());
 		
 		controlPanel = new ControlPanel(this);
 		
@@ -67,11 +66,7 @@ public class AgenteDesktop extends Agent {
 		controlPanel.notifySpoken(speaker, mensaje);
 	}
 	
-	/**
-	 * Inner class ParticipantsManager. This behaviour registers as a chat
-	 * participant and keeps the list of participants up to date by managing the
-	 * information received from the ChatManager agent.
-	 */
+	
 	class ParticipantsManager extends CyclicBehaviour {
 		private static final long serialVersionUID = -4845730529175649756L;
 		private MessageTemplate template;
@@ -137,24 +132,19 @@ public class AgenteDesktop extends Agent {
 						e.printStackTrace();
 					}
 				} else {
-					handleUnexpected(msg);
+					loguearErrores(msg);
 				}
 			} else {
 				block();
 			}
 		}
-	} // END of inner class ParticipantsManager
-
-	/**
-	 * Inner class ChatListener. This behaviour registers as a chat participant
-	 * and keeps the list of participants up to date by managing the information
-	 * received from the ChatManager agent.
-	 */
-	class ChatListener extends CyclicBehaviour {
+	} 
+	
+	class MensajeRecibido extends CyclicBehaviour {
 		private static final long serialVersionUID = 4881864151160276717L;
 		private MessageTemplate template = MessageTemplate.MatchConversationId(CHAT_ID);
 		
-		ChatListener(Agent a) {
+		MensajeRecibido(Agent a) {
 			super(a);
 		}
 
@@ -166,58 +156,20 @@ public class AgenteDesktop extends Agent {
 						ContentManager cm = myAgent.getContentManager();
 						InfoMensaje infoMensaje = (InfoMensaje) cm.extractContent(msg);
 						notifySpoken(msg.getSender().getLocalName(),infoMensaje);
-					} catch (OntologyException | CodecException e) {
+					} 
+					catch (OntologyException | CodecException e) {
 						e.printStackTrace();
 					}
-				} else {
-					handleUnexpected(msg);
+				} 
+				else {
+					loguearErrores(msg);
 				}
-			} else {
+			}
+			else {
 				block();
 			}
 		}
-	} // END of inner class ChatListener
-
-	/**
-	 * Inner class ChatSpeaker. INFORMs other participants about a spoken
-	 * sentence
-	 */
-	private class ChatSpeaker extends OneShotBehaviour {
-		private static final long serialVersionUID = -1426033904935339194L;
-		private InfoMensaje datos;
-
-		private ChatSpeaker(Agent agent, InfoMensaje infoMensaje) {
-			super(agent);
-			datos = infoMensaje;
-		}
-
-		public void action() {
-			spokenMsg.clearAllReceiver();
-			Iterator it = participants.iterator();
-			while (it.hasNext()) {
-				spokenMsg.addReceiver((AID) it.next());
-			}
-			try{
-				ContentManager cm = myAgent.getContentManager();
-				cm.fillContent(spokenMsg, datos);
-			} catch (Codec.CodecException e1) {
-				e1.printStackTrace();
-			} catch (OntologyException e2) {
-				e2.printStackTrace();
-			}
-			notifySpoken(myAgent.getLocalName(), datos);
-			send(spokenMsg);
-		}
-	} // END of inner class ChatSpeaker
-
-	// ///////////////////////////////////////
-	// Methods called by the interface
-	// ///////////////////////////////////////
-	public void handleSpoken(InfoMensaje infoMensaje) {
-		// Add a ChatSpeaker behaviour that INFORMs all participants about
-		// the spoken sentence
-		addBehaviour(new ChatSpeaker(this, infoMensaje));
-	}
+	} 
 	
 	public String[] getParticipantNames() {
 		String[] pp = new String[participants.size()];
@@ -230,13 +182,9 @@ public class AgenteDesktop extends Agent {
 		return pp;
 	}
 
-	// ///////////////////////////////////////
-	// Private utility method
-	// ///////////////////////////////////////
-	private void handleUnexpected(ACLMessage msg) {
+	private void loguearErrores(ACLMessage msg) {
 		if (logger.isLoggable(Logger.WARNING)) {
-			logger.log(Logger.WARNING, "Unexpected message received from "
-					+ msg.getSender().getName());
+			logger.log(Logger.WARNING, "Unexpected message received from " + msg.getSender().getName());
 			logger.log(Logger.WARNING, "Content is: " + msg.getContent());
 		}
 	}
