@@ -10,3 +10,7 @@
 
 #AndroidStudio files
 .idea
+
+
+#JADE files
+/desktop/MTPs-Main-Container.txt
