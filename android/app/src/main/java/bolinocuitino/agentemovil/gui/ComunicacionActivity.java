@@ -61,6 +61,8 @@ public class ComunicacionActivity extends Activity {
 			e.printStackTrace();
 		}
 
+		interfazAgente.obtenerActivity(this);
+
 		myReceiver = new MyReceiver();
 
 		IntentFilter refreshChatFilter = new IntentFilter();
@@ -68,11 +70,6 @@ public class ComunicacionActivity extends Activity {
 		registerReceiver(myReceiver, refreshChatFilter);
 
 		setContentView(R.layout.info);
-
-		Button button = (Button) findViewById(R.id.button_send);
-		button.setOnClickListener(botonEnviarListener);
-
-		enviarInformacionDelDispositivo();
 
 		Button boton_salir = (Button) findViewById(R.id.boton_salir);
 		boton_salir.setOnClickListener(botonSalirListener);
@@ -91,13 +88,6 @@ public class ComunicacionActivity extends Activity {
 							"El dispositivo " + DISPOSITIVO_MARCA_MODELO + " ha salido del sistema \n" +
 							"-----------------------------------------------");*/
 	}
-
-	private OnClickListener botonEnviarListener = new OnClickListener() {
-		public void onClick(View v) {
-			//Boton para volver a enviar los datos
-			enviarInformacionDelDispositivo();
-		}
-	};
 
 	private OnClickListener botonSalirListener = new OnClickListener() {
 		public void onClick(View v) {
@@ -142,7 +132,7 @@ public class ComunicacionActivity extends Activity {
 		chatField.setText(savedInstanceState.getString("chatField"));
 	}
 
-	private void enviarInformacionDelDispositivo() {
+	public InfoMensaje obtenerInformacionDelDispositivo() {
         InfoMensaje infoMensaje = new InfoMensaje();
 
         infoMensaje.setMensaje("Configurar un mensaje");
@@ -173,13 +163,7 @@ public class ComunicacionActivity extends Activity {
 			infoMensaje.setAltitud(geolocalizacion.getAltitude());
 		}
 
-		try {
-            interfazAgente.handleSpoken(infoMensaje);
-        }
-        catch (O2AException e) {
-			Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG).show();
-		}
-
+		return infoMensaje;
 	}
 
 	private String getSmsMasReciente() {

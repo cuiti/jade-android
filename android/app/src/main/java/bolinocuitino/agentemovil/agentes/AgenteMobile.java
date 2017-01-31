@@ -3,6 +3,7 @@ package bolinocuitino.agentemovil.agentes;
 import java.util.List;
 import java.util.logging.Level;
 
+import bolinocuitino.agentemovil.gui.ComunicacionActivity;
 import bolinocuitino.agentemovil.ontologia.InfoMensaje;
 import bolinocuitino.agentemovil.ontologia.Ingreso;
 import bolinocuitino.agentemovil.ontologia.AppOntology;
@@ -18,6 +19,7 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.util.Logger;
@@ -40,6 +42,8 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private ACLMessage mensaje;
 	private Context context;
 
+	private ComunicacionActivity comActivity;
+
 	protected void setup() {
 		Object[] args = getArguments();
 		if (args != null && args.length > 0) {
@@ -54,6 +58,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		contentManager.setValidationMode(false);
 
 		addBehaviour(new AdministradorDeSuscripcion(this));
+		addBehaviour(new InfomacionEnviada(this));
 		addBehaviour(new InformacionRecibida(this));
 
 		mensaje = new ACLMessage(ACLMessage.INFORM);
@@ -81,7 +86,17 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		logger.log(Level.INFO, "Sending broadcast " + broadcast.getAction());
 		context.sendBroadcast(broadcast);
 	}
-	
+
+	@Override
+	public void obtenerActivity(ComunicacionActivity comunicacionActivity) {
+		this.comActivity = comunicacionActivity;
+	}
+
+	@Override
+	public InfoMensaje obtenerInformacion(ComunicacionActivity comunicacionActivity) {
+		return comunicacionActivity.obtenerInformacionDelDispositivo();
+	}
+
 
 	/**
 	 * Este comportamiento sirve para registrar al agente mobile contra el
@@ -193,38 +208,36 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		}
 	}
 
-	private class EnvioDeInformacion extends OneShotBehaviour {
+	private class InfomacionEnviada extends TickerBehaviour {
 		private InfoMensaje datos;
 
-		private EnvioDeInformacion(Agent agente, InfoMensaje infoMensaje) {
-			super(agente);
-			datos = infoMensaje;
+		private InfomacionEnviada(Agent agente) {
+			super(agente, 1000);
 		}
 
-		public void action() {
+		@Override
+		protected void onTick() {
 			mensaje.clearAllReceiver();
 			Iterator it = conectados.iterator();
 			while (it.hasNext()) {
 				mensaje.addReceiver((AID) it.next());
-            }
+			}
+
+			datos = obtenerInformacion(comActivity);
 
 			try {
-                ContentManager contentManager = myAgent.getContentManager();
-                contentManager.fillContent(mensaje,datos);
+				ContentManager contentManager = myAgent.getContentManager();
+				contentManager.fillContent(mensaje,datos);
 			} catch (Codec.CodecException e1) {
 				e1.printStackTrace();
 			} catch (OntologyException e2) {
 				e2.printStackTrace();
 			}
 			notifySpoken(myAgent.getLocalName(), datos);
-    		send(mensaje);
+			send(mensaje);
 		}
 	}
 
-	public void handleSpoken(InfoMensaje infoMensaje) {
-		// usa el behaviour EnvioDeInformacion para enviar la info a todos los otros dispositivos
-		addBehaviour(new EnvioDeInformacion(this, infoMensaje));
-	}
 
 	private void handleUnexpected(ACLMessage msg) {
 		if (logger.isLoggable(Logger.WARNING)) {

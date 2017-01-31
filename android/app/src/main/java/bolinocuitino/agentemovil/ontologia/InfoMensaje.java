@@ -42,7 +42,7 @@ public class InfoMensaje implements Predicate{
                 "Nombre: " + this.getNombreMarcaModelo() + '\n' + "Numero: " +this.getNumeroDeTelefono() + '\n' +
                 "Operador: " + this.getOperadorDeTelefono() + '\n' + "Latitud: " + this.getLatitud() + '\n' +
                 "Longitud: " +this.getLongitud() + '\n' + "Altitud: " + this.getAltitud() + '\n' +
-                "Mensaje: " + this.getMensaje() + '\n' + "Ultimo SMS: " + this.getUltimoSMS();
+                "Mensaje: " + this.getMensaje() + '\n' + "Ultimo SMS: " + this.getUltimoSMS() + '\n';
     }
 
     public Date getFecha() {
