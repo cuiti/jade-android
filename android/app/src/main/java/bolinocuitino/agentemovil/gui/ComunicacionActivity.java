@@ -67,7 +67,7 @@ public class ComunicacionActivity extends Activity {
 		refreshChatFilter.addAction("bolinocuitino.agentemovil.ACTUALIZAR");
 		registerReceiver(myReceiver, refreshChatFilter);
 
-		setContentView(R.layout.chat);
+		setContentView(R.layout.info);
 
 		Button button = (Button) findViewById(R.id.button_send);
 		button.setOnClickListener(botonEnviarListener);
