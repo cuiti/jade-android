@@ -15,20 +15,16 @@ public class AppOntology extends Ontology implements AppVocabulary {
 		super(ONTOLOGY_NAME, BasicOntology.getInstance(), new CFReflectiveIntrospector());
 
 		try {
-			add(new PredicateSchema(JOINED), Joined.class);
-			add(new PredicateSchema(LEFT), Left.class);
-			add(new PredicateSchema(SPOKEN), Spoken.class);
+			add(new PredicateSchema(INGRESO), Ingreso.class);
+			add(new PredicateSchema(EGRESO), Egreso.class);
 			add(new PredicateSchema(INFOMENSAJE), InfoMensaje.class);
 		
-			PredicateSchema ps = (PredicateSchema) getSchema(JOINED);
-			ps.add(JOINED_WHO, (ConceptSchema) getSchema(BasicOntology.AID), 1, ObjectSchema.UNLIMITED);
+			PredicateSchema ps = (PredicateSchema) getSchema(INGRESO);
+			ps.add(INGRESO_AGENTESINGRESO, (ConceptSchema) getSchema(BasicOntology.AID), 1, ObjectSchema.UNLIMITED);
 
-			ps = (PredicateSchema) getSchema(LEFT);
-			ps.add(LEFT_WHO, (ConceptSchema) getSchema(BasicOntology.AID), 1, ObjectSchema.UNLIMITED);
+			ps = (PredicateSchema) getSchema(EGRESO);
+			ps.add(EGRESO_AGENTESEGRESO, (ConceptSchema) getSchema(BasicOntology.AID), 1, ObjectSchema.UNLIMITED);
 
-			ps = (PredicateSchema) getSchema(SPOKEN);
-			ps.add(SPOKEN_WHAT, (PrimitiveSchema) getSchema(BasicOntology.STRING));
-			
 			ps = (PredicateSchema) getSchema(INFOMENSAJE);
 			ps.add(INFOMENSAJE_MENSAJE,(PrimitiveSchema) getSchema(BasicOntology.STRING));
 			ps.add(INFOMENSAJE_FECHA, (PrimitiveSchema) getSchema(BasicOntology.DATE));

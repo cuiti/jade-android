@@ -28,7 +28,7 @@ public class ControlPanel {
 
 	public ControlPanel(AgenteDesktop agenteDesktop){
     	this.setAgenteDesktop(agenteDesktop);
-    	this.setFrame(new JFrame("Panel de Conexiones"));
+    	this.setFrame(new JFrame("Panel de Control"));
     	this.setTextArea(new JTextArea(40,40));
     	this.setBrowser(new Browser());
     	this.setBrowserView(new BrowserView(this.getBrowser()));
@@ -47,7 +47,7 @@ public class ControlPanel {
 		
 		JScrollPane scrollPane = new JScrollPane(this.getTextArea(), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); 
 		
-		JLabel labelTextArea = new JLabel("Estado de Conexiones");
+		JLabel labelTextArea = new JLabel("Estado de las Conexiones");
 		labelTextArea.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		labelTextArea.setHorizontalAlignment(JLabel.CENTER);
 		scrollPane.setColumnHeaderView(labelTextArea);
@@ -66,7 +66,7 @@ public class ControlPanel {
 		
 		JEditorPane editorPane = new JEditorPane();
 		
-		JLabel labelMap = new JLabel("Mapa de Conexiones");
+		JLabel labelMap = new JLabel("Mapa de las Ubicaciones");
 		labelMap.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		labelMap.setHorizontalAlignment(JLabel.CENTER);
 		

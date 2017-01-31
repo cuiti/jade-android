@@ -58,28 +58,24 @@ public class AgenteDesktop extends Agent {
 	protected void takeDown() {
 		
 	}
-
-	private void notifySpoken(String speaker, InfoMensaje mensaje) {
-		controlPanel.notifySpoken(speaker, mensaje);
-	}
 		
 	class AdministradorDeSuscripcion extends CyclicBehaviour {
 		private static final long serialVersionUID = -4845730529175649756L;
 		private MessageTemplate template;
 
-		AdministradorDeSuscripcion(Agent a) {
-			super(a);
+		AdministradorDeSuscripcion(Agent agente) {
+			super(agente);
 		}
 
 		public void onStart() {
 			ACLMessage subscripcion = new ACLMessage(ACLMessage.SUBSCRIBE);
 			subscripcion.setLanguage(codec.getName());
 			subscripcion.setOntology(ontology.getName());
-			String convId = "C-" + myAgent.getLocalName();
-			subscripcion.setConversationId(convId);
+			String conversationId = "C-" + myAgent.getLocalName();
+			subscripcion.setConversationId(conversationId);
 			subscripcion.addReceiver(new AID(ADMIN_NAME, AID.ISLOCALNAME));
 			myAgent.send(subscripcion);
-			template = MessageTemplate.MatchConversationId(convId);
+			template = MessageTemplate.MatchConversationId(conversationId);
 		}
 
 		public void action() {
@@ -87,24 +83,24 @@ public class AgenteDesktop extends Agent {
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
 					try {
-						AbsPredicate p = (AbsPredicate) myAgent.getContentManager().extractAbsContent(msg);
-						if (p.getTypeName().equals(AppOntology.JOINED)) {
-							AbsAggregate agg = (AbsAggregate) p.getAbsTerm(AppOntology.JOINED_WHO);
-							if (agg != null) {
-								Iterator it = agg.iterator();
+						AbsPredicate predicate = (AbsPredicate) myAgent.getContentManager().extractAbsContent(msg);
+						if (predicate.getTypeName().equals(AppOntology.INGRESO)) {
+							AbsAggregate aggregate = (AbsAggregate) predicate.getAbsTerm(AppOntology.INGRESO_AGENTESINGRESO);
+							if (aggregate != null) {
+								Iterator it = aggregate.iterator();
 								while (it.hasNext()) {
-									AbsConcept c = (AbsConcept) it.next();
-									conectados.add(BasicOntology.getInstance().toObject(c));
+									AbsConcept concept = (AbsConcept) it.next();
+									conectados.add(BasicOntology.getInstance().toObject(concept));
 								}
 							}
 						}
-						if (p.getTypeName().equals(AppOntology.LEFT)) {
-							AbsAggregate agg = (AbsAggregate) p.getAbsTerm(AppOntology.JOINED_WHO);
-							if (agg != null) {
-								Iterator it = agg.iterator();
+						if (predicate.getTypeName().equals(AppOntology.EGRESO)) {
+							AbsAggregate aggregate = (AbsAggregate) predicate.getAbsTerm(AppOntology.EGRESO_AGENTESEGRESO);
+							if (aggregate != null) {
+								Iterator it = aggregate.iterator();
 								while (it.hasNext()) {
-									AbsConcept c = (AbsConcept) it.next();
-									conectados.remove(BasicOntology.getInstance().toObject(c));
+									AbsConcept concept = (AbsConcept) it.next();
+									conectados.remove(BasicOntology.getInstance().toObject(concept));
 								}
 							}
 						}
@@ -128,25 +124,25 @@ public class AgenteDesktop extends Agent {
 		private static final long serialVersionUID = 4881864151160276717L;
 		private MessageTemplate template = MessageTemplate.MatchConversationId(INFO_ID);
 		
-		InformacionRecibida(Agent a) {
-			super(a);
+		InformacionRecibida(Agent agente) {
+			super(agente);
 		}
 
 		public void action() {
-			ACLMessage msg = myAgent.receive(template);
-			if (msg != null) {
-				if (msg.getPerformative() == ACLMessage.INFORM) {
+			ACLMessage mensaje = myAgent.receive(template);
+			if (mensaje != null) {
+				if (mensaje.getPerformative() == ACLMessage.INFORM) {
 					try {
-						ContentManager cm = myAgent.getContentManager();
-						InfoMensaje infoMensaje = (InfoMensaje) cm.extractContent(msg);
-						notifySpoken(msg.getSender().getLocalName(),infoMensaje);
+						ContentManager contentManager = myAgent.getContentManager();
+						InfoMensaje infoMensaje = (InfoMensaje) contentManager.extractContent(mensaje);
+						notifySpoken(mensaje.getSender().getLocalName(),infoMensaje);
 					} 
 					catch (OntologyException | CodecException e) {
 						e.printStackTrace();
 					}
 				} 
 				else {
-					loguearErrores(msg);
+					loguearErrores(mensaje);
 				}
 			}
 			else {
@@ -155,7 +151,12 @@ public class AgenteDesktop extends Agent {
 		}
 	} 
 	
-	public String[] getParticipantNames() {
+
+	private void notifySpoken(String speaker, InfoMensaje mensaje) {
+		controlPanel.notifySpoken(speaker, mensaje);
+	}
+	
+	public String[] nombresDeConectados() {
 		String[] pp = new String[conectados.size()];
 		Iterator it = conectados.iterator();
 		int i = 0;

@@ -15,7 +15,7 @@ import jade.content.abs.*;
 import jade.proto.SubscriptionResponder;
 import jade.proto.SubscriptionResponder.SubscriptionManager;
 import ontologia.AppOntology;
-import ontologia.Joined;
+import ontologia.Ingreso;
 import jade.proto.SubscriptionResponder.Subscription;
 import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
@@ -56,7 +56,9 @@ public class AgenteAdmin extends Agent implements SubscriptionManager {
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			protected void installHandlers(Map handlersTable) {
+				
 				handlersTable.put(IntrospectionOntology.DEADAGENT, new EventHandler() {
+					
 					private static final long serialVersionUID = -8595295021484121699L;
 
 					public void handle(Event event) {
@@ -80,37 +82,35 @@ public class AgenteAdmin extends Agent implements SubscriptionManager {
 	}
 
 	protected void takeDown() {
-		// Unsubscribe from the AMS
 		send(myAMSSubscriber.getCancel());
-		//FIXME: should inform current participants if any
 	}
 
 	public boolean register(Subscription subscription) throws RefuseException, NotUnderstoodException { 
 		try {
 			AID newId = subscription.getMessage().getSender();
 			if (!conectados.isEmpty()) {
-				ACLMessage notif1 = subscription.getMessage().createReply();
-				notif1.setPerformative(ACLMessage.INFORM);
+				ACLMessage mensajeOriginal = subscription.getMessage().createReply();
+				mensajeOriginal.setPerformative(ACLMessage.INFORM);
 				
-				ACLMessage notif2 = (ACLMessage) notif1.clone();
-				notif2.clearAllReceiver();
+				ACLMessage mensajeCopia = (ACLMessage) mensajeOriginal.clone();
+				mensajeCopia.clearAllReceiver();
 				
-				Joined joined = new Joined();
-				List<AID> who = new ArrayList<AID>(1);
-				who.add(newId);
-				joined.setWho(who);
-				getContentManager().fillContent(notif2, joined);
-				who.clear();
-				
+				Ingreso ingreso = new Ingreso();
+				List<AID> agentesIngreso = new ArrayList<AID>(1);
+				agentesIngreso.add(newId);
+				ingreso.setAgentesIngreso(agentesIngreso);
+				getContentManager().fillContent(mensajeCopia, ingreso);
+				agentesIngreso.clear();
+			
 				for (AID oldAid : conectados.keySet()) {
 					Subscription oldS = (Subscription) conectados.get(oldAid);
-					oldS.notify(notif2);
+					oldS.notify(mensajeCopia);
 					
-					who.add(oldAid);
+					agentesIngreso.add(oldAid);
 				}
 
-				getContentManager().fillContent(notif1, joined);
-				subscription.notify(notif1);
+				getContentManager().fillContent(mensajeOriginal, ingreso);
+				subscription.notify(mensajeOriginal);
 			}
 			
 			conectados.put(newId, subscription);
@@ -127,17 +127,17 @@ public class AgenteAdmin extends Agent implements SubscriptionManager {
 		if (conectados.remove(oldId) != null) {
 			if (!conectados.isEmpty()) {
 				try {
-					ACLMessage notif = subscription.getMessage().createReply();
-					notif.setPerformative(ACLMessage.INFORM);
-					notif.clearAllReceiver();
-					AbsPredicate p = new AbsPredicate(AppOntology.LEFT);
+					ACLMessage mensaje = subscription.getMessage().createReply();
+					mensaje.setPerformative(ACLMessage.INFORM);
+					mensaje.clearAllReceiver();
+					AbsPredicate predicate = new AbsPredicate(AppOntology.EGRESO);
 					AbsAggregate agg = new AbsAggregate(BasicOntology.SEQUENCE);
 					agg.add((AbsTerm) BasicOntology.getInstance().fromObject(oldId));
-					p.set(AppOntology.LEFT_WHO, agg);
-					getContentManager().fillContent(notif, p);
+					predicate.set(AppOntology.EGRESO_AGENTESEGRESO, agg);
+					getContentManager().fillContent(mensaje, predicate);
 
 					for (Subscription sub : conectados.values()) {
-						sub.notify(notif);
+						sub.notify(mensaje);
 					}
 				}
 				catch (Exception e) {
