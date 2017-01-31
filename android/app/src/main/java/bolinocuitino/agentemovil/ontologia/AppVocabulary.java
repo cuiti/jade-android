@@ -4,14 +4,11 @@ public interface AppVocabulary {
 
     public static String ONTOLOGY_NAME = "App-ontology";
 
-    public static String JOINED = "joined";
-    public static String JOINED_WHO = "who";
+    public static final String INGRESO = "Ingreso";
+    public static final String INGRESO_AGENTESINGRESO = "agentesIngreso";
 
-    public static String LEFT = "left";
-    public static String LEFT_WHO = "who";
-
-    public static String SPOKEN = "spoken";
-    public static String SPOKEN_WHAT = "what";
+    public static final String EGRESO = "Egreso";
+    public static final String EGRESO_AGENTESEGRESO = "agentesEgreso";
 
     public static final String INFOMENSAJE = "InfoMensaje";
     public static final String INFOMENSAJE_MENSAJE = "mensaje";

@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.logging.Level;
 
 import bolinocuitino.agentemovil.ontologia.InfoMensaje;
-import bolinocuitino.agentemovil.ontologia.Joined;
+import bolinocuitino.agentemovil.ontologia.Ingreso;
 import bolinocuitino.agentemovil.ontologia.AppOntology;
-import bolinocuitino.agentemovil.ontologia.Left;
+import bolinocuitino.agentemovil.ontologia.Egreso;
 
 import jade.content.ContentManager;
 import jade.content.Predicate;
@@ -34,7 +34,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private static final String INFO_ID = "__info__";
 	private static final String ADMIN_NAME = "manager";
 
-    private Set participants = new SortedSetImpl();
+    private Set conectados = new SortedSetImpl();
 	private Codec codec = new SLCodec();
 	private Ontology ontology = AppOntology.getInstance();
 	private ACLMessage mensaje;
@@ -48,10 +48,10 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			}
 		}
 		
-		ContentManager cm = getContentManager();
-		cm.registerLanguage(codec);
-		cm.registerOntology(ontology);
-		cm.setValidationMode(false);
+		ContentManager contentManager = getContentManager();
+		contentManager.registerLanguage(codec);
+		contentManager.registerOntology(ontology);
+		contentManager.setValidationMode(false);
 
 		addBehaviour(new AdministradorDeSuscripcion(this));
 		addBehaviour(new InformacionRecibida(this));
@@ -92,8 +92,8 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	class AdministradorDeSuscripcion extends CyclicBehaviour {
 		private MessageTemplate template;
 
-		AdministradorDeSuscripcion(Agent a) {
-			super(a);
+		AdministradorDeSuscripcion(Agent agente) {
+			super(agente);
 		}
 
 		public void onStart() {
@@ -106,8 +106,8 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			ACLMessage suscripcion = new ACLMessage(ACLMessage.SUBSCRIBE);
 			suscripcion.setLanguage(codec.getName());
 			suscripcion.setOntology(ontology.getName());
-			String convId = "C-" + myAgent.getLocalName();
-			suscripcion.setConversationId(convId);
+			String conversationId = "C-" + myAgent.getLocalName();
+			suscripcion.setConversationId(conversationId);
 			/**
 			 *  AID es AgentID, esta clase se usa internamente en JADE para mantener los datos de
 			 *  los agentes en las tablas de agentes.
@@ -120,7 +120,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			 * en este caso nos interesa recibir la informacion que esté dirigida a este agente,
 			 * para eso usamos el conversation ID
 			 */
-			template = MessageTemplate.MatchConversationId(convId);
+			template = MessageTemplate.MatchConversationId(conversationId);
 		}
 
 		public void action() {
@@ -130,18 +130,18 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
 					try {
-						Predicate p = (Predicate) myAgent.getContentManager().extractContent(msg);
-						if(p instanceof Joined) {
-							Joined joined = (Joined) p;
-							List<AID> aid = (List<AID>) joined.getWho();
-							for(AID a : aid)
-								participants.add(a);
+						Predicate predicate = (Predicate) myAgent.getContentManager().extractContent(msg);
+						if(predicate instanceof Ingreso) {
+							Ingreso ingreso = (Ingreso) predicate;
+							List<AID> agentesIngreso = ingreso.getAgentesIngreso();
+							for(AID aid : agentesIngreso)
+								conectados.add(aid);
 						}
-						if(p instanceof Left) {
-							Left left = (Left) p;
-							List<AID> aid = (List<AID>) left.getWho();
-							for(AID a : aid)
-								participants.remove(a);
+						if(predicate instanceof Egreso) {
+							Egreso egreso = (Egreso) predicate;
+							List<AID> agentesEgreso = egreso.getAgentesEgreso();
+							for(AID aid : agentesEgreso)
+								conectados.remove(aid);
 						}
 					} catch (Exception e) {
 						Logger.println(e.toString());
@@ -158,25 +158,25 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 
 	/**
 	 * Inner class ChatListener. This behaviour registers as a chat participant
-	 * and keeps the list of participants up to date by managing the information
+	 * and keeps the list of conectados up to date by managing the information
 	 * received from the ChatManager agent.
 	 */
 	private class InformacionRecibida extends CyclicBehaviour {
 		private static final long serialVersionUID = 741233963737842521L;
 		private MessageTemplate template = MessageTemplate.MatchConversationId(INFO_ID);
 
-		InformacionRecibida(Agent a) {
-			super(a);
+		InformacionRecibida(Agent agente) {
+			super(agente);
 		}
 
 		public void action() {
-			ACLMessage msg = myAgent.receive(template);
-			if (msg != null) {
-				if (msg.getPerformative() == ACLMessage.INFORM) {
+			ACLMessage mensaje = myAgent.receive(template);
+			if (mensaje != null) {
+				if (mensaje.getPerformative() == ACLMessage.INFORM) {
                     try {
-                        ContentManager cm = myAgent.getContentManager();
-                        InfoMensaje infoMensaje = (InfoMensaje) cm.extractContent(msg);
-                        notifySpoken(msg.getSender().getLocalName(), infoMensaje);
+                        ContentManager contentManager = myAgent.getContentManager();
+                        InfoMensaje infoMensaje = (InfoMensaje) contentManager.extractContent(mensaje);
+                        notifySpoken(mensaje.getSender().getLocalName(), infoMensaje);
                     }
                     catch (OntologyException  e1) {
                         e1.printStackTrace();
@@ -185,7 +185,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
                         e2.printStackTrace();
                     }
 				} else {
-					handleUnexpected(msg);
+					handleUnexpected(mensaje);
 				}
 			} else {
 				block();
@@ -196,21 +196,21 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private class EnvioDeInformacion extends OneShotBehaviour {
 		private InfoMensaje datos;
 
-		private EnvioDeInformacion(Agent a, InfoMensaje infoMensaje) {
-			super(a);
+		private EnvioDeInformacion(Agent agente, InfoMensaje infoMensaje) {
+			super(agente);
 			datos = infoMensaje;
 		}
 
 		public void action() {
 			mensaje.clearAllReceiver();
-			Iterator it = participants.iterator();
+			Iterator it = conectados.iterator();
 			while (it.hasNext()) {
 				mensaje.addReceiver((AID) it.next());
             }
 
 			try {
-                ContentManager cm = myAgent.getContentManager();
-                cm.fillContent(mensaje,datos);
+                ContentManager contentManager = myAgent.getContentManager();
+                contentManager.fillContent(mensaje,datos);
 			} catch (Codec.CodecException e1) {
 				e1.printStackTrace();
 			} catch (OntologyException e2) {
