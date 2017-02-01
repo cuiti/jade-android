@@ -161,7 +161,7 @@ public class AgenteDesktop extends Agent {
 		PrintWriter printWriter = null;
 		
 		try {
-			fileWriter = new FileWriter("C:/Temp/prueba.txt");
+			fileWriter = new FileWriter("C:/Temp/prueba.txt", true);
 			printWriter = new PrintWriter(fileWriter);			
 			printWriter.print(infoMensaje);
 		} catch (IOException e) {
