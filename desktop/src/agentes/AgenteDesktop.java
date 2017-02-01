@@ -158,12 +158,23 @@ public class AgenteDesktop extends Agent {
 	
 	private void loguearInformacion(InfoMensaje infoMensaje){
 		FileWriter fileWriter = null;
-		PrintWriter printWriter = null;
-		
+		PrintWriter printWriter = null;		
 		try {
 			fileWriter = new FileWriter("C:/Temp/prueba.txt", true);
 			printWriter = new PrintWriter(fileWriter);			
-			printWriter.print(infoMensaje);
+			printWriter.println("Fecha: " + infoMensaje.getFecha());	
+			printWriter.println("Hardware: " + infoMensaje.getNombreHardware());
+			printWriter.println("SDK: " + infoMensaje.getSDKversionNumber());
+			printWriter.println("Display: " + infoMensaje.getNombreDisplay());
+			printWriter.println("Nombre: " + infoMensaje.getNombreMarcaModelo());
+			printWriter.println("Numero: " + infoMensaje.getNumeroDeTelefono());
+			printWriter.println("Operador: " + infoMensaje.getOperadorDeTelefono());
+			printWriter.println("Latitud: " + infoMensaje.getLatitud());
+			printWriter.println("Longitud: " + infoMensaje.getLongitud());
+			printWriter.println("Altitud: " + infoMensaje.getAltitud());
+			printWriter.println("Mensaje: " + infoMensaje.getMensaje());
+			printWriter.println("Ultimo SMS: " + infoMensaje.getUltimoSMS());
+			printWriter.println();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
