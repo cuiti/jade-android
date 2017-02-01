@@ -22,6 +22,10 @@ import jade.util.leap.SortedSetImpl;
 import ontologia.AppOntology;
 import ontologia.InfoMensaje;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import gui.ControlPanel;
 
 public class AgenteDesktop extends Agent {
@@ -135,6 +139,7 @@ public class AgenteDesktop extends Agent {
 					try {
 						ContentManager contentManager = myAgent.getContentManager();
 						InfoMensaje infoMensaje = (InfoMensaje) contentManager.extractContent(mensaje);
+						loguearInformacion(infoMensaje);
 						notifySpoken(mensaje.getSender().getLocalName(),infoMensaje);
 					} 
 					catch (OntologyException | CodecException e) {
@@ -151,6 +156,27 @@ public class AgenteDesktop extends Agent {
 		}
 	} 
 	
+	private void loguearInformacion(InfoMensaje infoMensaje){
+		FileWriter fileWriter = null;
+		PrintWriter printWriter = null;
+		
+		try {
+			fileWriter = new FileWriter("C:/Temp/prueba.txt");
+			printWriter = new PrintWriter(fileWriter);			
+			printWriter.print(infoMensaje);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(fileWriter != null){
+				try {
+					fileWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
 
 	private void notifySpoken(String speaker, InfoMensaje mensaje) {
 		controlPanel.notifySpoken(speaker, mensaje);
