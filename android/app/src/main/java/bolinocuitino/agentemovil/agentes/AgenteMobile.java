@@ -18,7 +18,6 @@ import jade.content.onto.OntologyException;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -79,7 +78,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	protected void takeDown() {
 	}
 
-	private void notifySpoken(String emisor, InfoMensaje infoMensaje) {
+	private void avisoDeInformacionEnviada(String emisor, InfoMensaje infoMensaje) {
 		Intent broadcast = new Intent();
 		broadcast.setAction("bolinocuitino.agentemovil.ACTUALIZAR");
 		broadcast.putExtra("informacion", emisor + ": " + infoMensaje + "\n");
@@ -191,7 +190,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
                     try {
                         ContentManager contentManager = myAgent.getContentManager();
                         InfoMensaje infoMensaje = (InfoMensaje) contentManager.extractContent(mensaje);
-                        notifySpoken(mensaje.getSender().getLocalName(), infoMensaje);
+                        avisoDeInformacionEnviada(mensaje.getSender().getLocalName(), infoMensaje);
                     }
                     catch (OntologyException  e1) {
                         e1.printStackTrace();
@@ -233,7 +232,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			} catch (OntologyException e2) {
 				e2.printStackTrace();
 			}
-			notifySpoken(myAgent.getLocalName(), datos);
+			avisoDeInformacionEnviada(myAgent.getLocalName(), datos);
 			send(mensaje);
 		}
 	}
