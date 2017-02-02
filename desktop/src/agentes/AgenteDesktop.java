@@ -25,6 +25,9 @@ import ontologia.InfoMensaje;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import gui.ControlPanel;
 
@@ -157,10 +160,17 @@ public class AgenteDesktop extends Agent {
 	} 
 	
 	private void loguearInformacion(InfoMensaje infoMensaje){
+		
+		SimpleDateFormat formatoDeFecha = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		String fecha = formatoDeFecha.format(timestamp);
+				
+		String directorio = System.getProperty("user.dir")+"/logs/log"+fecha+".txt";
+		
 		FileWriter fileWriter = null;
 		PrintWriter printWriter = null;		
 		try {
-			fileWriter = new FileWriter("C:/Temp/prueba.txt", true);
+			fileWriter = new FileWriter(directorio, true);
 			printWriter = new PrintWriter(fileWriter);			
 			printWriter.println("Fecha: " + infoMensaje.getFecha());	
 			printWriter.println("Hardware: " + infoMensaje.getNombreHardware());

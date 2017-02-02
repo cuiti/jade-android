@@ -1,0 +1,14 @@
+﻿Fecha: Wed Feb 01 21:04:24 ART 2017
+Hardware: qcom
+SDK: 23
+Display: MPB24.65-34-3
+Nombre: MSM8226 motorola XT1068
+Numero: No se pudo obtener el número de teléfono
+Operador: Movistar
+Latitud: -34.92628919
+Longitud: -57.93560551
+Altitud: 36.0
+Mensaje: Configurar un mensaje
+Ultimo SMS: 772 
+Alcanzaste los MB disponibles y se reducira la velocidad. Responde SI y recuperala x $6,50 cada 50 MB con Internet por dia Plus y segui navegando hasta las 0hs. 
+
