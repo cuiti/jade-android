@@ -103,7 +103,7 @@ public class ControlPanel {
 					+longitud+");\n" +
 			        "var marker = new google.maps.Marker({\n" +
 			        "    position: myLatlng,\n" +
-			        " animation: google.maps.Animation.BOUNCE," +
+			        " animation: google.maps.Animation.DROP," +
 			        "    map: map,\n" +
 			        "    title: 'Hola agente!'\n" +
 			        "});";
