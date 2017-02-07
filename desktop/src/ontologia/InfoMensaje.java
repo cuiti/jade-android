@@ -18,6 +18,7 @@ public class InfoMensaje implements Predicate{
     private double altitud;
     private String numeroDeTelefono;
     private String operadorDeTelefono;
+	private double porcentajeUsoCpu;
     
     public InfoMensaje() {
         this.setMensaje("Mensaje por defecto");
@@ -32,6 +33,7 @@ public class InfoMensaje implements Predicate{
         this.setAltitud(0);
         this.setNumeroDeTelefono("No se pudo obtener el número de teléfono");
         this.setOperadorDeTelefono("No se pudo obtener el operador");
+        this.setPorcentajeUsoCpu(0);
     }
         
     @Override
@@ -42,7 +44,9 @@ public class InfoMensaje implements Predicate{
                 "Nombre: " + this.getNombreMarcaModelo() + '\n' + "Numero: " +this.getNumeroDeTelefono() + '\n' +
                 "Operador: " + this.getOperadorDeTelefono() + '\n' + "Latitud: " + this.getLatitud() + '\n' +
                 "Longitud: " +this.getLongitud() + '\n' + "Altitud: " + this.getAltitud() + '\n' +
+                "Porcentaje de uso de CPU: "+(this.getPorcentajeUsoCpu()*100)+ '\n'+
                 "Mensaje: " + this.getMensaje() + '\n' + "Ultimo SMS: " + this.getUltimoSMS() + '\n';
+                
     }
 
     public Date getFecha() {
@@ -139,5 +143,13 @@ public class InfoMensaje implements Predicate{
 
     public void setOperadorDeTelefono(String operadorDeTelefono) {
         this.operadorDeTelefono = operadorDeTelefono;
+    }
+    
+    public double getPorcentajeUsoCpu() {
+        return porcentajeUsoCpu;
+    }
+
+    public void setPorcentajeUsoCpu(double porcentajeUsoCpu) {
+        this.porcentajeUsoCpu = porcentajeUsoCpu;
     }
 }

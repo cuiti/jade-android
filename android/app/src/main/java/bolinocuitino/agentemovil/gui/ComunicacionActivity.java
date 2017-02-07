@@ -1,5 +1,7 @@
 package bolinocuitino.agentemovil.gui;
 
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
 import java.util.Date;
 import java.util.logging.Level;
 
@@ -38,8 +40,6 @@ public class ComunicacionActivity extends Activity {
 
 	private String nombreDispositivo;
 	private IAgenteMobile interfazAgente;
-	private String DISPOSITIVO_MARCA_MODELO = Build.BRAND + " " + Build.DEVICE;
-
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -142,6 +142,7 @@ public class ComunicacionActivity extends Activity {
         infoMensaje.setNombreDisplay(Build.DISPLAY);
         infoMensaje.setNombreMarcaModelo(Build.BOARD + " " + Build.BRAND + " " + Build.MODEL);
         infoMensaje.setUltimoSMS(getSmsMasReciente());
+		infoMensaje.setPorcentajeUsoCpu(usoDeCpu());
 
         TelephonyManager telephonyManager =(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
 
@@ -202,6 +203,40 @@ public class ComunicacionActivity extends Activity {
 		String provider = locationManager.getBestProvider(criteria, true);
 		Location location = locationManager.getLastKnownLocation(provider);
 		return location;
+	}
+
+	private float usoDeCpu() {
+		try {
+			RandomAccessFile reader = new RandomAccessFile("/proc/stat", "r");
+			String load = reader.readLine();
+
+			String[] toks = load.split(" +");  // Split on one or more spaces
+
+			long idle1 = Long.parseLong(toks[4]);
+			long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[5])
+					+ Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+
+			try {
+				Thread.sleep(360);
+			} catch (Exception e) {}
+
+			reader.seek(0);
+			load = reader.readLine();
+			reader.close();
+
+			toks = load.split(" +");
+
+			long idle2 = Long.parseLong(toks[4]);
+			long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[5])
+					+ Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+
+			return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return 0;
 	}
 
 }
