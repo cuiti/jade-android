@@ -42,6 +42,7 @@ public class AgenteDesktop extends Agent {
 	private Codec codec = new SLCodec();
 	private Ontology ontology = AppOntology.getInstance();
 	private ACLMessage mensaje;
+	private String fecha="default";
 
 	protected void setup() {
 		ContentManager cm = getContentManager();
@@ -49,6 +50,10 @@ public class AgenteDesktop extends Agent {
 		cm.registerOntology(ontology);
 		cm.setValidationMode(false);
 
+		SimpleDateFormat formatoDeFecha = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		fecha = formatoDeFecha.format(timestamp);
+		
 		addBehaviour(new AdministradorDeSuscripcion(this));
 		addBehaviour(new InformacionRecibida(this));
 
@@ -160,10 +165,6 @@ public class AgenteDesktop extends Agent {
 	
 	private void loguearInformacion(InfoMensaje infoMensaje){
 		
-		SimpleDateFormat formatoDeFecha = new SimpleDateFormat("yyyy.MM.dd.HH.mm");
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		String fecha = formatoDeFecha.format(timestamp);
-				
 		String directorio = System.getProperty("user.dir")+"/logs/log"+fecha+".txt";
 		
 		FileWriter fileWriter = null;
