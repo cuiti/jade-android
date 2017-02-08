@@ -64,9 +64,9 @@ public class ComunicacionActivity extends Activity {
 
 		myReceiver = new MyReceiver();
 
-		IntentFilter refreshChatFilter = new IntentFilter();
-		refreshChatFilter.addAction("bolinocuitino.agentemovil.ACTUALIZAR");
-		registerReceiver(myReceiver, refreshChatFilter);
+		IntentFilter actualizarInformacionFilter = new IntentFilter();
+		actualizarInformacionFilter.addAction("bolinocuitino.agentemovil.ACTUALIZAR");
+		registerReceiver(myReceiver, actualizarInformacionFilter);
 
 		setContentView(R.layout.info);
 
@@ -83,14 +83,14 @@ public class ComunicacionActivity extends Activity {
 
 	protected void onStop() {
 		super.onStop();
-		logger.log(Level.INFO,"Se ejecutó el Stop del activity");
 		interfazAgente.detenerEnvioDeInformacion();
+		interfazAgente.avisoDeSalida();
+		logger.log(Level.INFO,"Se ejecutó el Stop del activity");
 	}
 
 	private OnClickListener botonSalirListener = new OnClickListener() {
 		public void onClick(View v) {
 			//Boton para salir de la app
-			interfazAgente.avisoDeSalida();
 			moveTaskToBack(true);
 			finish();
 		}
@@ -103,8 +103,8 @@ public class ComunicacionActivity extends Activity {
 			String action = intent.getAction();
 			logger.log(Level.INFO, "Received intent " + action);
 			if (action.equalsIgnoreCase("bolinocuitino.agentemovil.ACTUALIZAR")) {
-				final TextView chatField = (TextView) findViewById(R.id.chatTextView);
-				chatField.append(intent.getExtras().getString("informacion"));
+				final TextView campoDeTexto = (TextView) findViewById(R.id.textViewPrincipal);
+				campoDeTexto.append(intent.getExtras().getString("informacion"));
 				scrollDown();
 			}
 		}
@@ -112,14 +112,14 @@ public class ComunicacionActivity extends Activity {
 
 	private void scrollDown() {
 		final ScrollView scroller = (ScrollView) findViewById(R.id.scroller);
-		final TextView chatField = (TextView) findViewById(R.id.chatTextView);
-		scroller.smoothScrollTo(0, chatField.getBottom());
+		final TextView campoDeTexto = (TextView) findViewById(R.id.textViewPrincipal);
+		scroller.smoothScrollTo(0, campoDeTexto.getBottom());
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		final TextView chatField = (TextView) findViewById(R.id.chatTextView);
-		savedInstanceState.putString("chatField", chatField.getText()
+		final TextView campoDeTexto = (TextView) findViewById(R.id.textViewPrincipal);
+		savedInstanceState.putString("campoDeTexto", campoDeTexto.getText()
 				.toString());
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -127,8 +127,8 @@ public class ComunicacionActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		final TextView chatField = (TextView) findViewById(R.id.chatTextView);
-		chatField.setText(savedInstanceState.getString("chatField"));
+		final TextView campoDeTexto = (TextView) findViewById(R.id.textViewPrincipal);
+		campoDeTexto.setText(savedInstanceState.getString("campoDeTexto"));
 	}
 
 	public InfoMensaje obtenerInformacionDelDispositivo() {

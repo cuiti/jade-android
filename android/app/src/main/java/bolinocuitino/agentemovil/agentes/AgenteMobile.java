@@ -147,8 +147,6 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		}
 
 		public void action() {
-			// Receives information about people joining and leaving
-			// the chat from the ChatManager agent
 			ACLMessage msg = myAgent.receive(template);
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
@@ -179,11 +177,6 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		}
 	}
 
-	/**
-	 * Inner class ChatListener. This behaviour registers as a chat participant
-	 * and keeps the list of conectados up to date by managing the information
-	 * received from the ChatManager agent.
-	 */
 	private class InformacionRecibida extends CyclicBehaviour {
 		private static final long serialVersionUID = 741233963737842521L;
 		private MessageTemplate template = MessageTemplate.MatchConversationId(INFO_ID);

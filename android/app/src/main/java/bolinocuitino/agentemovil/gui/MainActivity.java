@@ -40,8 +40,6 @@ public class MainActivity extends Activity {
 	private MicroRuntimeServiceBinder microRuntimeServiceBinder;
 	private ServiceConnection serviceConnection;  //para usar el servicio de android
 
-	static final int CHAT_REQUEST = 0;
-
 	private MyReceiver myReceiver;
 	private MyHandler myHandler;
 
@@ -57,16 +55,16 @@ public class MainActivity extends Activity {
 
 		myReceiver = new MyReceiver();
 
-		IntentFilter showChatFilter = new IntentFilter();
-		showChatFilter.addAction("bolinocuitino.agentemovil.INICIAR_COMUNICACION");
-		registerReceiver(myReceiver, showChatFilter);
+		IntentFilter iniciarComunicacionFilter = new IntentFilter();
+		iniciarComunicacionFilter.addAction("bolinocuitino.agentemovil.INICIAR_COMUNICACION");
+		registerReceiver(myReceiver, iniciarComunicacionFilter);
 
 		myHandler = new MyHandler();
 
 		setContentView(R.layout.main);
 
-		Button button = (Button) findViewById(R.id.button_chat);
-		button.setOnClickListener(buttonChatListener);
+		Button button = (Button) findViewById(R.id.boton_iniciar);
+		button.setOnClickListener(botonComenzarListener);
 
 		informacionTextView = (TextView) findViewById(R.id.infoTextView);
 		informacionTextView.setText("");	//este texto es el que se usa para avisar cuando se está conectando
@@ -90,10 +88,16 @@ public class MainActivity extends Activity {
 
 		unregisterReceiver(myReceiver);
 
-		logger.log(Level.INFO, "Destroy activity!");
+		logger.log(Level.INFO, "Se destruye el activity");
 	}
 
-	private OnClickListener buttonChatListener = new OnClickListener() {
+	protected void onResume(){
+		super.onResume();
+		informacionTextView.setText(" ");
+		logger.log(Level.INFO, "Se ejecuta el resume del activity");
+	}
+
+	private OnClickListener botonComenzarListener = new OnClickListener() {
 		public void onClick(View v) {
 			//el nombre de usuario se genera con marca + modelo + entero random
 			nombreDispositivo = Build.BRAND + "-" + Build.DEVICE+(int)Math.floor(Math.random() * 999)+1;
@@ -117,31 +121,6 @@ public class MainActivity extends Activity {
 			}
 		}
 	};
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == CHAT_REQUEST) {
-			if (resultCode == RESULT_CANCELED) {
-				// The chat activity was closed.
-				informacionTextView.setText("");
-				logger.log(Level.INFO, "Stopping Jade...");
-				microRuntimeServiceBinder
-						.stopAgentContainer(new RuntimeCallback<Void>() {
-							@Override
-							public void onSuccess(Void thisIsNull) {
-							}
-
-							@Override
-							public void onFailure(Throwable throwable) {
-								logger.log(Level.SEVERE, "Failed to stop the "
-										+ AgenteMobile.class.getName()
-										+ "...");
-								agentStartupCallback.onFailure(throwable);
-							}
-						});
-			}
-		}
-	}
 
 	private RuntimeCallback<AgentController> agentStartupCallback = new RuntimeCallback<AgentController>() {
 		@Override
@@ -177,8 +156,7 @@ public class MainActivity extends Activity {
 				Intent iniciarComunicacion = new Intent(MainActivity.this,
 						ComunicacionActivity.class);
 				iniciarComunicacion.putExtra("nombreDispositivo", nombreDispositivo);
-				MainActivity.this
-						.startActivityForResult(iniciarComunicacion, CHAT_REQUEST);
+				startActivity(iniciarComunicacion);
 			}
 		}
 	}
