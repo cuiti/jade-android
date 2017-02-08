@@ -90,6 +90,7 @@ public class ComunicacionActivity extends Activity {
 	private OnClickListener botonSalirListener = new OnClickListener() {
 		public void onClick(View v) {
 			//Boton para salir de la app
+			interfazAgente.avisoDeSalida();
 			moveTaskToBack(true);
 			finish();
 		}

@@ -18,6 +18,7 @@ import jade.content.onto.OntologyException;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -99,6 +100,10 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 
 	public void detenerEnvioDeInformacion(){
 		infomacionEnviadaBehaviour.stop();
+	}
+
+	public void avisoDeSalida(){
+		addBehaviour(new AvisoDeSalida(this));
 	}
 
 	/**
@@ -215,7 +220,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		private InfoMensaje datos;
 
 		private InfomacionEnviada(Agent agente) {
-			super(agente, 1000);
+			super(agente, 5000);
 		}
 
 		@Override
@@ -235,6 +240,35 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 				e1.printStackTrace();
 			} catch (OntologyException e2) {
 				e2.printStackTrace();
+			}
+			avisoDeInformacionEnviada(myAgent.getLocalName(), datos);
+			send(mensaje);
+		}
+	}
+
+	private class AvisoDeSalida extends OneShotBehaviour{
+
+		private InfoMensaje datos;
+		private AvisoDeSalida(Agent agente) {
+			super(agente);
+		}
+
+		@Override
+		public void action() {
+			mensaje.clearAllReceiver();
+			Iterator it = conectados.iterator();
+			while (it.hasNext()) {
+				mensaje.addReceiver((AID) it.next());
+			}
+
+			datos = obtenerInformacion(comActivity);
+			datos.setMensaje("salida");
+
+			try {
+				ContentManager contentManager = myAgent.getContentManager();
+				contentManager.fillContent(mensaje,datos);
+			} catch (Exception e1) {
+				e1.printStackTrace();
 			}
 			avisoDeInformacionEnviada(myAgent.getLocalName(), datos);
 			send(mensaje);

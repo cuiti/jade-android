@@ -7,4 +7,5 @@ public interface IAgenteMobile {
 	void obtenerActivity(ComunicacionActivity comunicacionActivity);
     InfoMensaje obtenerInformacion(ComunicacionActivity comunicacionActivity);
     void detenerEnvioDeInformacion();
+    void avisoDeSalida();
 }
