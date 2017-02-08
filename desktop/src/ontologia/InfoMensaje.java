@@ -37,14 +37,17 @@ public class InfoMensaje implements Predicate{
         
     @Override
     public String toString() {
-        return '\n' + 
-                "Fecha: " + this.getFecha().toString() + '\n' + "Hardware: " + this.getNombreHardware() + '\n' +
-                "SDK: " + this.getSDKversionNumber() + '\n' + "Display: " + this.getNombreDisplay() + '\n' +
-                "Nombre: " + this.getNombreMarcaModelo() + '\n' + "Operador: " + this.getOperadorDeTelefono() + '\n' + 
-                "Latitud: " + this.getLatitud() + '\n' + "Longitud: " +this.getLongitud() + '\n' + 
-                "Altitud: " + this.getAltitud() + '\n' + "Porcentaje de uso de CPU: " + this.porcentajeUsoCpuToString() + '\n'+
-                "Mensaje: " + this.getMensaje() + '\n' + "Ultimo SMS: " + this.getUltimoSMS() + '\n';
-                
+    	if (getMensaje().equals("salida")){
+    		return '\n' + "El dispositivo " + getNombreMarcaModelo() +" ha salido del sistema."+ '\n';
+    	}else{
+	        return '\n' + 
+	                "Fecha: " + this.getFecha().toString() + '\n' + "Hardware: " + this.getNombreHardware() + '\n' +
+	                "SDK: " + this.getSDKversionNumber() + '\n' + "Display: " + this.getNombreDisplay() + '\n' +
+	                "Nombre: " + this.getNombreMarcaModelo() + '\n' + "Operador: " + this.getOperadorDeTelefono() + '\n' + 
+	                "Latitud: " + this.getLatitud() + '\n' + "Longitud: " +this.getLongitud() + '\n' + 
+	                "Altitud: " + this.getAltitud() + '\n' + "Porcentaje de uso de CPU: " + this.porcentajeUsoCpuToString() + '\n'+
+	                "Mensaje: " + this.getMensaje() + '\n' + "Ultimo SMS: " + this.getUltimoSMS() + '\n';
+    	} 
     }
 
     public Date getFecha() {
