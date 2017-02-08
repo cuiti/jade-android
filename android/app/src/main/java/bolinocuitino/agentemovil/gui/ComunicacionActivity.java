@@ -78,14 +78,13 @@ public class ComunicacionActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(myReceiver);
-		logger.log(Level.INFO, "Destroy activity!");
+		logger.log(Level.INFO, "Se destruye el activity");
 	}
 
 	protected void onStop() {
 		super.onStop();
-		/*interfazAgente.handleSpoken("---------------------------------------------- \n" +
-							"El dispositivo " + DISPOSITIVO_MARCA_MODELO + " ha salido del sistema \n" +
-							"-----------------------------------------------");*/
+		logger.log(Level.INFO,"Se ejecutó el Stop del activity");
+		interfazAgente.detenerEnvioDeInformacion();
 	}
 
 	private OnClickListener botonSalirListener = new OnClickListener() {

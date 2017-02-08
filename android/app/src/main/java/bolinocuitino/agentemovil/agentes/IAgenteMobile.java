@@ -6,4 +6,5 @@ import bolinocuitino.agentemovil.ontologia.InfoMensaje;
 public interface IAgenteMobile {
 	void obtenerActivity(ComunicacionActivity comunicacionActivity);
     InfoMensaje obtenerInformacion(ComunicacionActivity comunicacionActivity);
+    void detenerEnvioDeInformacion();
 }

@@ -40,6 +40,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private Ontology ontology = AppOntology.getInstance();
 	private ACLMessage mensaje;
 	private Context context;
+	private InfomacionEnviada infomacionEnviadaBehaviour = new InfomacionEnviada(this);
 
 	private ComunicacionActivity comActivity;
 
@@ -57,7 +58,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		contentManager.setValidationMode(false);
 
 		addBehaviour(new AdministradorDeSuscripcion(this));
-		addBehaviour(new InfomacionEnviada(this));
+		addBehaviour(infomacionEnviadaBehaviour);
 		addBehaviour(new InformacionRecibida(this));
 
 		mensaje = new ACLMessage(ACLMessage.INFORM);
@@ -96,6 +97,9 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		return comunicacionActivity.obtenerInformacionDelDispositivo();
 	}
 
+	public void detenerEnvioDeInformacion(){
+		infomacionEnviadaBehaviour.stop();
+	}
 
 	/**
 	 * Este comportamiento sirve para registrar al agente mobile contra el
