@@ -31,7 +31,6 @@ public class InfoMensaje implements Predicate{
         this.setLatitud(0);
         this.setLongitud(0);
         this.setAltitud(0);
-        this.setNumeroDeTelefono("No se pudo obtener el número de teléfono");
         this.setOperadorDeTelefono("No se pudo obtener el operador");
         this.setPorcentajeUsoCpu(0);
     }
@@ -41,10 +40,9 @@ public class InfoMensaje implements Predicate{
         return '\n' + 
                 "Fecha: " + this.getFecha().toString() + '\n' + "Hardware: " + this.getNombreHardware() + '\n' +
                 "SDK: " + this.getSDKversionNumber() + '\n' + "Display: " + this.getNombreDisplay() + '\n' +
-                "Nombre: " + this.getNombreMarcaModelo() + '\n' + "Numero: " +this.getNumeroDeTelefono() + '\n' +
-                "Operador: " + this.getOperadorDeTelefono() + '\n' + "Latitud: " + this.getLatitud() + '\n' +
-                "Longitud: " +this.getLongitud() + '\n' + "Altitud: " + this.getAltitud() + '\n' +
-                "Porcentaje de uso de CPU: "+(this.getPorcentajeUsoCpu()*100)+ '\n'+
+                "Nombre: " + this.getNombreMarcaModelo() + '\n' + "Operador: " + this.getOperadorDeTelefono() + '\n' + 
+                "Latitud: " + this.getLatitud() + '\n' + "Longitud: " +this.getLongitud() + '\n' + 
+                "Altitud: " + this.getAltitud() + '\n' + "Porcentaje de uso de CPU: " + this.porcentajeUsoCpuToString() + '\n'+
                 "Mensaje: " + this.getMensaje() + '\n' + "Ultimo SMS: " + this.getUltimoSMS() + '\n';
                 
     }
@@ -146,10 +144,14 @@ public class InfoMensaje implements Predicate{
     }
     
     public double getPorcentajeUsoCpu() {
-        return porcentajeUsoCpu;
+        return (porcentajeUsoCpu * 100);
     }
 
     public void setPorcentajeUsoCpu(double porcentajeUsoCpu) {
         this.porcentajeUsoCpu = porcentajeUsoCpu;
     }
+    
+    public String porcentajeUsoCpuToString() {
+    	return String.format("%.2f", this.getPorcentajeUsoCpu()) + "%";		
+	}
 }
