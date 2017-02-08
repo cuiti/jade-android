@@ -21,7 +21,6 @@ public interface AppVocabulary {
     public static final String INFOMENSAJE_LATITUD = "latitud";
     public static final String INFOMENSAJE_LONGITUD = "longitud";
     public static final String INFOMENSAJE_ALTITUD = "altitud";
-    public static final String INFOMENSAJE_NUMERODETELEFONO = "numeroDeTelefono";
     public static final String INFOMENSAJE_OPERADORDETELEFONO = "operadorDeTelefono";
     public static final String INFOMENSAJE_PORCENTAJECPU = "porcentajeUsoCpu";
 }

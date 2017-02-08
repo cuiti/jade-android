@@ -16,7 +16,6 @@ public class InfoMensaje implements Predicate{
     private double latitud;
     private double longitud;
     private double altitud;
-    private String numeroDeTelefono;
     private String operadorDeTelefono;
 	private double porcentajeUsoCpu;
     
@@ -130,14 +129,6 @@ public class InfoMensaje implements Predicate{
         this.mensaje = mensaje;
     }
 
-    public String getNumeroDeTelefono() {
-        return numeroDeTelefono;
-    }
-
-    public void setNumeroDeTelefono(String numeroDeTelefono) {
-    	this.numeroDeTelefono = numeroDeTelefono;
-    }
-
     public String getOperadorDeTelefono() {
         return operadorDeTelefono;
     }
@@ -147,7 +138,7 @@ public class InfoMensaje implements Predicate{
     }
     
     public double getPorcentajeUsoCpu() {
-        return (porcentajeUsoCpu * 100);
+        return porcentajeUsoCpu;
     }
 
     public void setPorcentajeUsoCpu(double porcentajeUsoCpu) {
@@ -155,6 +146,6 @@ public class InfoMensaje implements Predicate{
     }
     
     public String porcentajeUsoCpuToString() {
-    	return String.format("%.2f", this.getPorcentajeUsoCpu()) + "%";		
+    	return String.format("%.2f", this.getPorcentajeUsoCpu() * 100) + "%";		
 	}
 }

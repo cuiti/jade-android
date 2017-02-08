@@ -145,11 +145,6 @@ public class ComunicacionActivity extends Activity {
 
         TelephonyManager telephonyManager =(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
 
-		String numero = telephonyManager.getLine1Number();
-
-		if((numero != null) && !numero.isEmpty())
-			infoMensaje.setNumeroDeTelefono(numero);
-
 		String operador = telephonyManager.getNetworkOperatorName();
 
 		if(operador != null && !operador.isEmpty())
