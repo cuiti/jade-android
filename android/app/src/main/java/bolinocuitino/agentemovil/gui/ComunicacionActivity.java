@@ -1,6 +1,5 @@
 package bolinocuitino.agentemovil.gui;
 
-import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.util.Date;
 import java.util.logging.Level;
@@ -10,9 +9,9 @@ import bolinocuitino.agentemovil.ontologia.InfoMensaje;
 import jade.core.MicroRuntime;
 import jade.util.Logger;
 import jade.wrapper.ControllerException;
-import jade.wrapper.O2AException;
 import jade.wrapper.StaleProxyException;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -237,6 +236,14 @@ public class ComunicacionActivity extends Activity {
 		}
 
 		return 0;
+	}
+
+	private double getMemoriaLibre(){
+		//devuelve el uso de memoria en megabytes
+		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+		ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		activityManager.getMemoryInfo(mi);
+		return mi.availMem / 0x100000L;
 	}
 
 }
