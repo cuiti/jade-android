@@ -17,11 +17,14 @@ public class EstadoInicialAplicacion extends Application {
 				
 		String defaultHost = settings.getString("defaultHost", "");
 		String defaultPort = settings.getString("defaultPort", "");
-		if (defaultHost.isEmpty() || defaultPort.isEmpty()) {
+		String intervalo = settings.getString("intervaloEnvio","");
+
+		if (defaultHost.isEmpty() || defaultPort.isEmpty() || intervalo.isEmpty()) {
 			logger.log(Level.INFO, "Create default properties");
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putString("defaultHost", "192.168.0.108");
 			editor.putString("defaultPort", "1099");
+			editor.putString("intervaloEnvio","5000");
 			editor.commit();
 		}
 	}

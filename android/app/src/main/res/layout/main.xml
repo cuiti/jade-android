@@ -31,6 +31,19 @@
 		android:ems="10"
 		android:id="@+id/numeroDePuerto" />
 
+	<TextView
+		android:text="Intervalo de envio de información"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/textView3" />
+
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:inputType="textPersonName"
+		android:ems="10"
+		android:id="@+id/campoIntervalo" />
+
 	<Button android:layout_height="wrap_content"
 		android:layout_gravity="center_horizontal"
 		android:text="@string/boton_comenzar"
@@ -44,16 +57,24 @@
 		android:text="info">
 	</TextView>
 
-	<ImageView
-		android:src="@drawable/jade"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/imageView" />
-
 	<TextView
 		android:text="@string/nombresIntegrantes"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:gravity="center"
 		android:id="@+id/nombresIntegrantes" />
+
+	<ImageView
+		android:src="@drawable/unlpinfo"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/unlp"
+		android:layout_marginTop="30dp"/>
+
+	<ImageView
+		android:src="@drawable/jade"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/jadeLogo"
+		android:layout_marginTop="10dp"/>
 </LinearLayout>

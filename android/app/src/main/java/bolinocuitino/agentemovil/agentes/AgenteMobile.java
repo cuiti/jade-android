@@ -28,6 +28,7 @@ import jade.util.leap.Set;
 import jade.util.leap.SortedSetImpl;
 import android.content.Intent;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 public class AgenteMobile extends Agent implements IAgenteMobile {
 	private static final long serialVersionUID = 1594371294421614291L;
@@ -41,7 +42,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private Ontology ontology = AppOntology.getInstance();
 	private ACLMessage mensaje;
 	private Context context;
-	private InfomacionEnviada infomacionEnviadaBehaviour = new InfomacionEnviada(this);
+	private InfomacionEnviada infomacionEnviadaBehaviour;
 
 	private ComunicacionActivity comActivity;
 
@@ -57,6 +58,11 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		contentManager.registerLanguage(codec);
 		contentManager.registerOntology(ontology);
 		contentManager.setValidationMode(false);
+
+		SharedPreferences settings = context.getSharedPreferences("jadePreferencesFile", 0);
+		int intervalo = Integer.parseInt(settings.getString("intervaloEnvio",""));
+
+		infomacionEnviadaBehaviour = new InfomacionEnviada(this,intervalo);
 
 		addBehaviour(new AdministradorDeSuscripcion(this));
 		addBehaviour(infomacionEnviadaBehaviour);
@@ -212,8 +218,8 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private class InfomacionEnviada extends TickerBehaviour {
 		private InfoMensaje datos;
 
-		private InfomacionEnviada(Agent agente) {
-			super(agente, 5000);
+		private InfomacionEnviada(Agent agente,int intervalo) {
+			super(agente, intervalo);
 		}
 
 		@Override

@@ -46,6 +46,7 @@ public class MainActivity extends Activity {
 	private TextView informacionTextView;
 	private EditText campoDireccionIP;
 	private EditText campoNumeroPuerto;
+	private EditText campoIntervalo;
 
 	private String nombreDispositivo;
 
@@ -74,12 +75,16 @@ public class MainActivity extends Activity {
 
 		String host = settings.getString("defaultHost", "");
 		String puerto = settings.getString("defaultPort", "");
+		String intervalo = settings.getString("intervaloEnvio","");
 
 		campoDireccionIP = (EditText) findViewById(R.id.direccionIP);
 		campoDireccionIP.setText(host);
 
 		campoNumeroPuerto = (EditText) findViewById(R.id.numeroDePuerto);
 		campoNumeroPuerto.setText(puerto);
+
+		campoIntervalo = (EditText) findViewById(R.id.campoIntervalo);
+		campoIntervalo.setText(intervalo);
 	}
 
 	@Override
@@ -107,6 +112,7 @@ public class MainActivity extends Activity {
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putString("defaultHost", campoDireccionIP.getText().toString());
 			editor.putString("defaultPort", campoNumeroPuerto.getText().toString());
+			editor.putString("intervaloEnvio",campoIntervalo.getText().toString());
 			editor.commit();
 
 			try {
