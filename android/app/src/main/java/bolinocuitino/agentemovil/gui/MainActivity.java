@@ -135,8 +135,8 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onFailure(Throwable throwable) {
-			logger.log(Level.INFO, "Nickname already in use!");
-			myHandler.postError("Nickname already in use!");
+			logger.log(Level.INFO, "Error al inicializar el agente!");
+			myHandler.postError("Error al inicializar el agente!");
 		}
 	};
 
@@ -263,7 +263,7 @@ public class MainActivity extends Activity {
 				new RuntimeCallback<Void>() {
 					@Override
 					public void onSuccess(Void thisIsNull) {
-						logger.log(Level.INFO, "Successfully start of the "
+						logger.log(Level.INFO, "Inicio correcto del agente "
 								+ AgenteMobile.class.getName() + "...");
 						try {
 							agentStartupCallback.onSuccess(MicroRuntime
@@ -276,7 +276,7 @@ public class MainActivity extends Activity {
 
 					@Override
 					public void onFailure(Throwable throwable) {
-						logger.log(Level.SEVERE, "Failed to start the "
+						logger.log(Level.SEVERE, "Fallo al iniciar "
 								+ AgenteMobile.class.getName() + "...");
 						agentStartupCallback.onFailure(throwable);
 					}
