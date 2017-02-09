@@ -109,8 +109,13 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	}
 
 	public void avisoDeSalida(){
-		addBehaviour(new AvisoDeSalida(this));
+		addBehaviour(new MensajeIndividual(this,"salida"));
 	}
+
+	public void avisoDeEntrada(){
+		addBehaviour(new MensajeIndividual(this,"entrada"));
+	}
+
 
 	/**
 	 * Este comportamiento sirve para registrar al agente mobile contra el
@@ -245,11 +250,14 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		}
 	}
 
-	private class AvisoDeSalida extends OneShotBehaviour{
+	private class MensajeIndividual extends OneShotBehaviour{
 
 		private InfoMensaje datos;
-		private AvisoDeSalida(Agent agente) {
+		private String textoMsj;
+
+		private MensajeIndividual(Agent agente, String texto) {
 			super(agente);
+			this.textoMsj = texto;
 		}
 
 		@Override
@@ -261,7 +269,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			}
 
 			datos = obtenerInformacion(comActivity);
-			datos.setMensaje("salida");
+			datos.setMensaje(textoMsj);
 
 			try {
 				ContentManager contentManager = myAgent.getContentManager();

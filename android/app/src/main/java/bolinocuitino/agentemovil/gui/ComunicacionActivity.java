@@ -72,6 +72,8 @@ public class ComunicacionActivity extends Activity {
 
 		Button boton_salir = (Button) findViewById(R.id.boton_salir);
 		boton_salir.setOnClickListener(botonSalirListener);
+
+		interfazAgente.avisoDeEntrada();
 	}
 
 	@Override
