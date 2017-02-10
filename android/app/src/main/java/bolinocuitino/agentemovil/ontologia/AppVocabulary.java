@@ -23,4 +23,6 @@ public interface AppVocabulary {
     public static final String INFOMENSAJE_ALTITUD = "altitud";
     public static final String INFOMENSAJE_OPERADORDETELEFONO = "operadorDeTelefono";
     public static final String INFOMENSAJE_PORCENTAJECPU = "porcentajeUsoCpu";
+    public static final String INFOMENSAJE_MEMORIALIBRE = "memoriaLibre";
+    public static final String INFOMENSAJE_NIVELBATERIA = "nivelBateria";
 }

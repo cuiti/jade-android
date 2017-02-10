@@ -18,7 +18,8 @@ public class InfoMensaje implements Predicate{
     private double altitud;
     private String operadorDeTelefono;
     private double porcentajeUsoCpu;
-
+    private double memoriaLibre;
+    private double nivelBateria;
 
     public InfoMensaje() {
         this.setMensaje("Mensaje por defecto");
@@ -33,6 +34,8 @@ public class InfoMensaje implements Predicate{
         this.setAltitud(0);
         this.setOperadorDeTelefono("No se pudo obtener el operador");
         this.setPorcentajeUsoCpu(0);
+        this.setMemoriaLibre(0);
+        this.setNivelBateria(0);
     }
 
     @Override
@@ -41,8 +44,9 @@ public class InfoMensaje implements Predicate{
                 "Fecha: " + this.getFecha().toString() + '\n' + "Hardware: " + this.getNombreHardware() + '\n' +
                 "SDK: " + this.getSDKversionNumber() + '\n' + "Display: " + this.getNombreDisplay() + '\n' +
                 "Nombre: " + this.getNombreMarcaModelo() + '\n' + "Operador: " + this.getOperadorDeTelefono() + '\n' +
-                "Latitud: " + this.getLatitud() + '\n' + "Longitud: " +this.getLongitud() + '\n' +
-                "Altitud: " + this.getAltitud() + '\n' + "Porcentaje de uso de CPU: " + this.porcentajeUsoCpuToString() + '\n'+
+                "Latitud: " + this.getLatitud() + '\n' + "Longitud: " + this.getLongitud() + '\n' +
+                "Altitud: " + this.getAltitud() + '\n' + "Nivel de Bateria: " + this.nivelBateriaToString() + '\n' +
+                "Uso de CPU: " + this.porcentajeUsoCpuToString() + '\n'+ "Memoria Libre: " + this.memoriaLibreToString() + '\n' +
                 "Mensaje: " + this.getMensaje() + '\n' + "Ultimo SMS: " + this.getUltimoSMS() + '\n';
     }
 
@@ -143,6 +147,30 @@ public class InfoMensaje implements Predicate{
     }
 
     public String porcentajeUsoCpuToString() {
-        return String.format("%.2f", this.getPorcentajeUsoCpu() * 100) + "%";
+        return String.format("%.2f", this.getPorcentajeUsoCpu() * 100) + " %";
+    }
+
+    public double getMemoriaLibre() {
+        return memoriaLibre;
+    }
+
+    public void setMemoriaLibre(double memoriaLibre) {
+        this.memoriaLibre = memoriaLibre;
+    }
+
+    public String memoriaLibreToString() {
+        return this.getMemoriaLibre() + " MB";
+    }
+
+    public double getNivelBateria() {
+        return nivelBateria;
+    }
+
+    public void setNivelBateria(double nivelBateria) {
+        this.nivelBateria = nivelBateria;
+    }
+
+    public String nivelBateriaToString() {
+        return this.getNivelBateria() + " %";
     }
 }

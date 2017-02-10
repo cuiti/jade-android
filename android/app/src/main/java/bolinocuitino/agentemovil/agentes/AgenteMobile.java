@@ -223,8 +223,8 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private class InfomacionEnviada extends TickerBehaviour {
 		private InfoMensaje datos;
 
-		private InfomacionEnviada(Agent agente,int intervalo) {
-			super(agente, intervalo);
+        private InfomacionEnviada(Agent agente,int intervalo) {
+			super(agente, (intervalo * 1000));
 		}
 
 		@Override

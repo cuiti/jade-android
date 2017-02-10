@@ -21,6 +21,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -136,7 +137,7 @@ public class ComunicacionActivity extends Activity {
 	public InfoMensaje obtenerInformacionDelDispositivo() {
         InfoMensaje infoMensaje = new InfoMensaje();
 
-        infoMensaje.setMensaje("Configurar un mensaje");
+        infoMensaje.setMensaje("Enviando Informacion...");
         infoMensaje.setFecha(new Date());
         infoMensaje.setNombreHardware(Build.HARDWARE);
         infoMensaje.setSDKversionNumber(Integer.parseInt(Build.VERSION.SDK));
@@ -144,6 +145,8 @@ public class ComunicacionActivity extends Activity {
         infoMensaje.setNombreMarcaModelo(Build.BOARD + " " + Build.BRAND + " " + Build.MODEL);
         infoMensaje.setUltimoSMS(getSmsMasReciente());
 		infoMensaje.setPorcentajeUsoCpu(usoDeCpu());
+        infoMensaje.setMemoriaLibre(memoriaLibre());
+        infoMensaje.setNivelBateria(nivelBateria());
 
         TelephonyManager telephonyManager =(TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
 
@@ -167,14 +170,8 @@ public class ComunicacionActivity extends Activity {
 		String smsMessage = "";
 		Cursor cursor = getContentResolver().query(Uri.parse("content://sms/inbox"), null, null, null, null);
 		if (cursor.moveToFirst()) {
-			//do {
 			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("address")) + " \n";
 			smsMessage += cursor.getString(cursor.getColumnIndexOrThrow("body")) + " \n";
-			//for(int idx=0;idx<cursor.getColumnCount();idx++)
-			//{
-			//smsMessage += " " + cursor.getColumnName(idx) + ":" + cursor.getString(idx)+ " \n";
-			//}
-			//} while (cursor.moveToNext());	//comento el while para que levante solo el 1er SMS
 		} else {
 			Log.d("SMS", "no se encontraron sms");
 			smsMessage = "No se encontraron SMS";
@@ -235,12 +232,25 @@ public class ComunicacionActivity extends Activity {
 		return 0;
 	}
 
-	private double getMemoriaLibre(){
+	private double memoriaLibre(){
 		//devuelve el uso de memoria en megabytes
 		ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
 		ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 		activityManager.getMemoryInfo(mi);
 		return mi.availMem / 0x100000L;
+	}
+
+	private float nivelBateria() {
+		Intent batteryIntent = registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+		int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+		int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+		// Error checking that probably isn't needed but I added just in case.
+		if(level == -1 || scale == -1) {
+			return 50.0f;
+		}
+
+		return ((float)level / (float)scale) * 100.0f;
 	}
 
 }

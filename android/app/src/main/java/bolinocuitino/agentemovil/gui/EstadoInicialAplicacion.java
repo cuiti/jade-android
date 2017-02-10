@@ -24,7 +24,7 @@ public class EstadoInicialAplicacion extends Application {
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putString("defaultHost", "192.168.0.108");
 			editor.putString("defaultPort", "1099");
-			editor.putString("intervaloEnvio","5000");
+			editor.putString("intervaloEnvio","5");
 			editor.commit();
 		}
 	}

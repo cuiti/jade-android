@@ -6,6 +6,7 @@
 
     <string name="label_host">Dirección IP</string>
     <string name="label_port">Número de puerto</string>
+    <string name="label_interval">Intervalo de envio de información en segundos</string>
     <string name="nombresIntegrantes">\n Trabajo práctico final de Programación Distribuída y Tiempo Real.\n Alumnos Patricio Bolino y Alfonso Cuitiño</string>
 
     <string name="boton_comenzar">  Comenzar!  </string>
