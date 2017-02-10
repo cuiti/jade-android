@@ -38,6 +38,8 @@ public class AppOntology extends Ontology implements AppVocabulary {
 			ps.add(INFOMENSAJE_ALTITUD,(PrimitiveSchema) getSchema(BasicOntology.FLOAT));
 			ps.add(INFOMENSAJE_OPERADORDETELEFONO,(PrimitiveSchema) getSchema(BasicOntology.STRING));	
 			ps.add(INFOMENSAJE_PORCENTAJECPU,(PrimitiveSchema) getSchema (BasicOntology.FLOAT));
+			ps.add(INFOMENSAJE_MEMORIALIBRE,(PrimitiveSchema) getSchema(BasicOntology.FLOAT));
+			ps.add(INFOMENSAJE_NIVELBATERIA,(PrimitiveSchema) getSchema(BasicOntology.FLOAT));
 			
 		} catch (OntologyException oe) {
 			oe.printStackTrace();

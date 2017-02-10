@@ -178,7 +178,9 @@ public class AgenteDesktop extends Agent {
 			printWriter.println("Display: " + infoMensaje.getNombreDisplay());
 			printWriter.println("Nombre: " + infoMensaje.getNombreMarcaModelo());
 			printWriter.println("Operador: " + infoMensaje.getOperadorDeTelefono());
+			printWriter.println("Nivel Bateria: " + infoMensaje.nivelBateriaToString());
 			printWriter.println("Uso de CPU: " + infoMensaje.porcentajeUsoCpuToString());
+			printWriter.println("Memoria Libre: " + infoMensaje.memoriaLibreToString());
 			printWriter.println("Latitud: " + infoMensaje.getLatitud());
 			printWriter.println("Longitud: " + infoMensaje.getLongitud());
 			printWriter.println("Altitud: " + infoMensaje.getAltitud());
