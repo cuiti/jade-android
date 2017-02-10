@@ -137,8 +137,7 @@ public class ComunicacionActivity extends Activity {
 	public InfoMensaje obtenerInformacionDelDispositivo() {
         InfoMensaje infoMensaje = new InfoMensaje();
 
-        infoMensaje.setMensaje("Enviando Informacion...");
-        infoMensaje.setFecha(new Date());
+		infoMensaje.setFecha(new Date());
         infoMensaje.setNombreHardware(Build.HARDWARE);
         infoMensaje.setSDKversionNumber(Integer.parseInt(Build.VERSION.SDK));
         infoMensaje.setNombreDisplay(Build.DISPLAY);

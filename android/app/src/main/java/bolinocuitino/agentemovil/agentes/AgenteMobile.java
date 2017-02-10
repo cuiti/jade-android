@@ -222,7 +222,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 
 	private class InfomacionEnviada extends TickerBehaviour {
 		private InfoMensaje datos;
-
+        private int contador = 0;
         private InfomacionEnviada(Agent agente,int intervalo) {
 			super(agente, (intervalo * 1000));
 		}
@@ -236,6 +236,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 			}
 
 			datos = obtenerInformacion(comActivity);
+            datos.setMensaje("Enviando Informacion... Mensaje " + (++contador));
 
 			try {
 				ContentManager contentManager = myAgent.getContentManager();
