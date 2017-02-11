@@ -91,7 +91,8 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private void avisoDeInformacionEnviada(String emisor, InfoMensaje infoMensaje) {
 		Intent broadcast = new Intent();
 		broadcast.setAction("bolinocuitino.agentemovil.ACTUALIZAR");
-		broadcast.putExtra("informacion", emisor + ": " + infoMensaje + "\n");
+		String texto = infoMensaje.getMensaje().equals("salida") ? "El dispositivo " + infoMensaje.getNombreMarcaModelo() +" ha salido del sistema.\n" : emisor + ": " + infoMensaje + "\n";
+		broadcast.putExtra("informacion", texto);
 		logger.log(Level.INFO, "Sending broadcast " + broadcast.getAction());
 		context.sendBroadcast(broadcast);
 	}
