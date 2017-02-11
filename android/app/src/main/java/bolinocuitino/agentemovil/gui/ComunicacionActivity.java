@@ -89,13 +89,14 @@ public class ComunicacionActivity extends Activity {
 		interfazAgente.detenerEnvioDeInformacion();
 		interfazAgente.avisoDeSalida();
 		logger.log(Level.INFO,"Se ejecutó el Stop del activity");
+		finish();
 	}
 
 	private OnClickListener botonSalirListener = new OnClickListener() {
 		public void onClick(View v) {
 			//Boton para salir de la app
 			moveTaskToBack(true);
-			finish();
+			ComunicacionActivity.this.finish();
 		}
 	};
 
