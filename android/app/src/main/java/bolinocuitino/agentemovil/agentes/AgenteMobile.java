@@ -43,6 +43,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 	private ACLMessage mensaje;
 	private Context context;
 	private InfomacionEnviada infomacionEnviadaBehaviour;
+	private InformacionRecibida informacionRecibidaBehaviour;
 
 	private ComunicacionActivity comActivity;
 
@@ -63,10 +64,11 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 		int intervalo = Integer.parseInt(settings.getString("intervaloEnvio",""));
 
 		infomacionEnviadaBehaviour = new InfomacionEnviada(this,intervalo);
+		informacionRecibidaBehaviour = new InformacionRecibida(this);
 
 		addBehaviour(new AdministradorDeSuscripcion(this));
 		addBehaviour(infomacionEnviadaBehaviour);
-		addBehaviour(new InformacionRecibida(this));
+		addBehaviour(informacionRecibidaBehaviour);
 
 		mensaje = new ACLMessage(ACLMessage.INFORM);
 		mensaje.setConversationId(INFO_ID);
@@ -106,6 +108,7 @@ public class AgenteMobile extends Agent implements IAgenteMobile {
 
 	public void detenerEnvioDeInformacion(){
 		infomacionEnviadaBehaviour.stop();
+		removeBehaviour(informacionRecibidaBehaviour);
 	}
 
 	public void avisoDeSalida(){
