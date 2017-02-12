@@ -91,10 +91,13 @@ public class ControlPanel {
 	
 	public void notifySpoken(String speaker, InfoMensaje infoMensaje) {
 		this.getTextArea().append(speaker+": "+infoMensaje+"\n");		
-		this.showCoordinatesOnMap(infoMensaje.getLatitud(), infoMensaje.getLongitud());
+		this.showCoordinatesOnMap(infoMensaje);
 	}
 	
-	private void showCoordinatesOnMap(Double latitud, Double longitud){
+	private void showCoordinatesOnMap(InfoMensaje infoMensaje){
+		Double latitud = infoMensaje.getLatitud();
+		Double longitud = infoMensaje.getLongitud();
+		
 		if ((latitud != null)&&(longitud!=null)){
 			String javascriptMap ="";
 			
@@ -105,7 +108,7 @@ public class ControlPanel {
 			        "    position: myLatlng,\n" +
 			        " animation: google.maps.Animation.DROP," +
 			        "    map: map,\n" +
-			        "    title: 'Hola agente!'\n" +
+			        "    title: " + infoMensaje.getNombreMarcaModelo() + "\n" +
 			        "});";
 				
 			this.getBrowser().executeJavaScript(javascriptMap);
