@@ -89,8 +89,8 @@ public class ControlPanel {
 		
 	}
 	
-	public void notifySpoken(String speaker, InfoMensaje infoMensaje) {
-		this.getTextArea().append(speaker+": "+infoMensaje+"\n");		
+	public void notifySpoken(InfoMensaje infoMensaje) {
+		this.getTextArea().append(infoMensaje.toString());		
 		this.showCoordinatesOnMap(infoMensaje);
 	}
 	
