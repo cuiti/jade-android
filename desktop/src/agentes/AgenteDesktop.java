@@ -172,11 +172,11 @@ public class AgenteDesktop extends Agent {
 		try {
 			fileWriter = new FileWriter(directorio, true);
 			printWriter = new PrintWriter(fileWriter);			
+			printWriter.println("Nombre: " + infoMensaje.getNombreMarcaModelo());
 			printWriter.println("Fecha: " + infoMensaje.getFecha());	
 			printWriter.println("Hardware: " + infoMensaje.getNombreHardware());
 			printWriter.println("SDK: " + infoMensaje.getSDKversionNumber());
-			printWriter.println("Display: " + infoMensaje.getNombreDisplay());
-			printWriter.println("Nombre: " + infoMensaje.getNombreMarcaModelo());
+			printWriter.println("Display: " + infoMensaje.getNombreDisplay());			
 			printWriter.println("Operador: " + infoMensaje.getOperadorDeTelefono());
 			printWriter.println("Nivel Bateria: " + infoMensaje.nivelBateriaToString());
 			printWriter.println("Uso de CPU: " + infoMensaje.porcentajeUsoCpuToString());
