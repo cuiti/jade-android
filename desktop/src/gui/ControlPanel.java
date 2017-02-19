@@ -2,7 +2,6 @@ package gui;
 
 
 import java.awt.BorderLayout;
-import java.net.URL;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -24,7 +23,8 @@ public class ControlPanel {
 	private JFrame frame;
 	private JTextArea textArea;
 	private Browser browser;
-	private BrowserView browserView;    
+	private BrowserView browserView;  
+	private String URL_MAPA = "http://cuiti.github.io/jade/mapa/";
 
 	public ControlPanel(AgenteDesktop agenteDesktop){
     	this.setAgenteDesktop(agenteDesktop);
@@ -80,13 +80,9 @@ public class ControlPanel {
 		
 		this.getFrame().getContentPane().add(panelMap);
 		
-		
-		
 		this.getFrame().setVisible(true);
 		
-		URL url = this.getClass().getResource("/gui/map.html");
-		this.getBrowser().loadURL(url.toString());
-		
+		this.getBrowser().loadURL(URL_MAPA);
 	}
 	
 	public void mostrarInformacion(InfoMensaje infoMensaje) {
@@ -108,9 +104,8 @@ public class ControlPanel {
 			        "    position: myLatlng,\n" +
 			        " animation: google.maps.Animation.DROP," +
 			        "    map: map,\n" +
-			        "    title: " + infoMensaje.getNombreMarcaModelo() + "\n" +
+			        "    title: '" + infoMensaje.getNombreMarcaModelo() + "' \n" +
 			        "});";
-				
 			this.getBrowser().executeJavaScript(javascriptMap);
 		}			
 	}
