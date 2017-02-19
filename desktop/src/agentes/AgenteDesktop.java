@@ -147,7 +147,7 @@ public class AgenteDesktop extends Agent {
 						ContentManager contentManager = myAgent.getContentManager();
 						InfoMensaje infoMensaje = (InfoMensaje) contentManager.extractContent(mensaje);
 						loguearInformacion(infoMensaje);
-						notifySpoken(infoMensaje);
+						mostrarInformacion(infoMensaje);
 					} 
 					catch (OntologyException | CodecException e) {
 						e.printStackTrace();
@@ -201,8 +201,8 @@ public class AgenteDesktop extends Agent {
 		
 	}
 
-	private void notifySpoken(InfoMensaje mensaje) {
-		controlPanel.notifySpoken(mensaje);
+	private void mostrarInformacion(InfoMensaje mensaje) {
+		controlPanel.mostrarInformacion(mensaje);
 	}
 	
 	public String[] nombresDeConectados() {

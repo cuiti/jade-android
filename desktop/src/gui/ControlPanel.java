@@ -89,7 +89,7 @@ public class ControlPanel {
 		
 	}
 	
-	public void notifySpoken(InfoMensaje infoMensaje) {
+	public void mostrarInformacion(InfoMensaje infoMensaje) {
 		this.getTextArea().append(infoMensaje.toString());		
 		this.showCoordinatesOnMap(infoMensaje);
 	}
